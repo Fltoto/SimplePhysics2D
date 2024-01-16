@@ -1,0 +1,36 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v5.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v5.0": {
+      "SimplePhysics2D/1.0.0": {
+        "dependencies": {
+          "SimpleECS": "1.0.0"
+        },
+        "runtime": {
+          "SimplePhysics2D.dll": {}
+        }
+      },
+      "SimpleECS/1.0.0": {
+        "runtime": {
+          "SimpleECS.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "SimplePhysics2D/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "SimpleECS/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

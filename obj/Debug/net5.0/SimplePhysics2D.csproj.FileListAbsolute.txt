@@ -1,0 +1,15 @@
+D:\CProjects\SimplePhysics2D\SimplePhysics2D\bin\Debug\net5.0\SimplePhysics2D.deps.json
+D:\CProjects\SimplePhysics2D\SimplePhysics2D\bin\Debug\net5.0\SimplePhysics2D.dll
+D:\CProjects\SimplePhysics2D\SimplePhysics2D\bin\Debug\net5.0\SimplePhysics2D.pdb
+D:\CProjects\SimplePhysics2D\SimplePhysics2D\bin\Debug\net5.0\SimpleECS.dll
+D:\CProjects\SimplePhysics2D\SimplePhysics2D\obj\Debug\net5.0\SimplePhysics2D.csproj.AssemblyReference.cache
+D:\CProjects\SimplePhysics2D\SimplePhysics2D\obj\Debug\net5.0\SimplePhysics2D.GeneratedMSBuildEditorConfig.editorconfig
+D:\CProjects\SimplePhysics2D\SimplePhysics2D\obj\Debug\net5.0\SimplePhysics2D.AssemblyInfoInputs.cache
+D:\CProjects\SimplePhysics2D\SimplePhysics2D\obj\Debug\net5.0\SimplePhysics2D.AssemblyInfo.cs
+D:\CProjects\SimplePhysics2D\SimplePhysics2D\obj\Debug\net5.0\SimplePhysics2D.csproj.CoreCompileInputs.cache
+D:\CProjects\SimplePhysics2D\SimplePhysics2D\obj\Debug\net5.0\SimplePhysics2D.csproj.CopyComplete
+D:\CProjects\SimplePhysics2D\SimplePhysics2D\obj\Debug\net5.0\SimplePhysics2D.dll
+D:\CProjects\SimplePhysics2D\SimplePhysics2D\obj\Debug\net5.0\refint\SimplePhysics2D.dll
+D:\CProjects\SimplePhysics2D\SimplePhysics2D\obj\Debug\net5.0\SimplePhysics2D.pdb
+D:\CProjects\SimplePhysics2D\SimplePhysics2D\obj\Debug\net5.0\ref\SimplePhysics2D.dll
+D:\CProjects\SimplePhysics2D\SimplePhysics2D\bin\Debug\net5.0\SimpleECS.pdb

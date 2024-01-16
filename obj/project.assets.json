@@ -1,0 +1,96 @@
+{
+  "version": 3,
+  "targets": {
+    "net5.0": {
+      "SimpleECS/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v5.0",
+        "compile": {
+          "bin/placeholder/SimpleECS.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SimpleECS.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "SimpleECS/1.0.0": {
+      "type": "project",
+      "path": "../../SimpleECS/SimpleECS/SimpleECS.csproj",
+      "msbuildProject": "../../SimpleECS/SimpleECS/SimpleECS.csproj"
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net5.0": [
+      "SimpleECS >= 1.0.0"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\COLORFUL\\.nuget\\packages\\": {},
+    "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "D:\\CProjects\\SimplePhysics2D\\SimplePhysics2D\\SimplePhysics2D.csproj",
+      "projectName": "SimplePhysics2D",
+      "projectPath": "D:\\CProjects\\SimplePhysics2D\\SimplePhysics2D\\SimplePhysics2D.csproj",
+      "packagesPath": "C:\\Users\\COLORFUL\\.nuget\\packages\\",
+      "outputPath": "D:\\CProjects\\SimplePhysics2D\\SimplePhysics2D\\obj\\",
+      "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
+      "configFilePaths": [
+        "C:\\Users\\COLORFUL\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "originalTargetFrameworks": [
+        "net5.0"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net5.0": {
+          "targetAlias": "net5.0",
+          "projectReferences": {
+            "D:\\CProjects\\SimpleECS\\SimpleECS\\SimpleECS.csproj": {
+              "projectPath": "D:\\CProjects\\SimpleECS\\SimpleECS\\SimpleECS.csproj"
+            }
+          }
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      }
+    },
+    "frameworks": {
+      "net5.0": {
+        "targetAlias": "net5.0",
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100\\RuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}
