@@ -47,6 +47,27 @@ namespace SimplePhysics2D
             }
             return value;
         }
+        public static float Angle(SPVector2 form, SPVector2 to)
+        {
+            float x = to.X - form.X;
+            float y = to.Y - form.Y;
+
+            float hy = MathF.Sqrt(MathF.Pow(x, 2) + MathF.Pow(y, 2f));
+
+            float cos = x / hy;
+            float radian = MathF.Acos(cos);
+
+            float angle = 180 / (MathF.PI / radian);
+
+            //if (x <= 0 && y > 0) angle = 180 - angle;
+            //if (x <= 0 && y < 0) angle = 180 + angle;
+            //if (x > 0 && y <=0) angle = 360 - angle;
+
+            if (y < 0) angle = 360 - angle;   // if (y < 0) angle = - angle;   //-180-180
+            else if ((y == 0) && (x < 0)) angle = 180;
+
+            return angle;
+        }
         public static bool NearlyEqual(float a, float b)
         {
             return MathF.Abs(a - b) < VerySmallAmount;

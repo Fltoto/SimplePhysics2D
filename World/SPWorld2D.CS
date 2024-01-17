@@ -1,6 +1,7 @@
 ﻿using SimpleECS;
 using SimplePhysics2D.BoudingBox;
 using SimplePhysics2D.Collision;
+using SimplePhysics2D.Raycast;
 using SimplePhysics2D.RigidBody;
 using SimplePhysics2D.World;
 using System;
@@ -72,6 +73,7 @@ namespace SimplePhysics2D
         {
             Iterations = (int)SPMath2D.Clamp(Iterations, MinIterations, MaxIterations);
             var l = GetAllComponents();
+            RayCaster.SetContents(l) ;
             for (int it = 0; it < Iterations; it++) {
                 BroadPhase(l,time,Iterations);
             }
@@ -121,6 +123,10 @@ namespace SimplePhysics2D
         }
         private void SeparateBodies(SPBody2D bodyA, SPBody2D bodyB, SPVector2 mtv)
         {
+            if (bodyA.IsTrigger || bodyB.IsTrigger)
+            {
+                return;
+            }
             if (bodyA.IsStatic)
             {
                 bodyB.Move(mtv);
@@ -145,6 +151,10 @@ namespace SimplePhysics2D
             bodyA.OnCollide?.Invoke(contact);
             bodyB.OnCollide?.Invoke(contact);
 
+            if (bodyA.IsTrigger || bodyB.IsTrigger) {
+                return;
+            }
+
             SPVector2 relativeVelocity = bodyB.LinearVelocity - bodyA.LinearVelocity;
 
             if (SPMath2D.Dot(relativeVelocity,normal)>0) {
@@ -164,6 +174,10 @@ namespace SimplePhysics2D
             SPBody2D bodyB = contact.BodyB;
             bodyA.OnCollide?.Invoke(contact);
             bodyB.OnCollide?.Invoke(contact);
+            if (bodyA.IsTrigger || bodyB.IsTrigger)
+            {
+                return;
+            }
             SPVector2 normal = contact.Normal;
             SPVector2 contact1 = contact.Contact1;
             SPVector2 contact2 = contact.Contact2;
@@ -239,6 +253,10 @@ namespace SimplePhysics2D
             SPBody2D bodyB = contact.BodyB;
             bodyA.OnCollide?.Invoke(contact);
             bodyB.OnCollide?.Invoke(contact);
+            if (bodyA.IsTrigger || bodyB.IsTrigger)
+            {
+                return;
+            }
             SPVector2 normal = contact.Normal;
             SPVector2 contact1 = contact.Contact1;
             SPVector2 contact2 = contact.Contact2;

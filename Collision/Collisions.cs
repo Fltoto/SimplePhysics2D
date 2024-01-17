@@ -25,7 +25,6 @@ namespace SimplePhysics2D.Collision
             }
             return true;
         }
-
         public static void PointSegmentDistance(SPVector2 p, SPVector2 a, SPVector2 b, out float distanceSquared, out SPVector2 cp)
         {
             SPVector2 ab = b - a;

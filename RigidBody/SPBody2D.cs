@@ -39,6 +39,7 @@ namespace SimplePhysics2D.RigidBody
         public readonly float DynamicFriction;
 
         public bool IsStatic;
+        public bool IsTrigger;
 
         public readonly float Radius;
         public readonly float Width;
@@ -226,7 +227,7 @@ namespace SimplePhysics2D.RigidBody
 
         public void Step(float time,int Iterations)
         {
-            if (IsStatic) {
+            if (IsStatic || IsTrigger) {
                 linearVelocity = SPVector2.Zero;
                 rotationalVelocity = 0;
                 force = SPVector2.Zero;
