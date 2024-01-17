@@ -5,7 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\SimpleECS\SimpleECS\SimpleECS.csproj" />
+    <Reference Include="SimpleECS">
+      <HintPath>Libary\SimpleECS.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

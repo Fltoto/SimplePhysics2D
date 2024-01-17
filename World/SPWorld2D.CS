@@ -72,14 +72,6 @@ namespace SimplePhysics2D
         {
             Iterations = (int)SPMath2D.Clamp(Iterations, MinIterations, MaxIterations);
             var l = GetAllComponents();
-            if (l.Length > 2)
-            {
-                Random rand = new Random();
-                l[0].AddForce(new SPVector2(rand.Next(-100,100)/10f, rand.Next(-100,100)/10f));
-                l[0].rotation = 45;
-                l[1].IsStatic = true;
-                l[2].IsStatic = true;
-            }
             for (int it = 0; it < Iterations; it++) {
                 BroadPhase(l,time,Iterations);
             }
