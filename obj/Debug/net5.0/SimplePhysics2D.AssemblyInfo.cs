@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SimplePhysics2D")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d59669892d7f70f7b096adb5bfae21191068a308")]
 [assembly: System.Reflection.AssemblyProductAttribute("SimplePhysics2D")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SimplePhysics2D")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

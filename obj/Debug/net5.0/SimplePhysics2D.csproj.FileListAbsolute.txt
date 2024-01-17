@@ -13,3 +13,4 @@ D:\CProjects\SimplePhysics2D\SimplePhysics2D\obj\Debug\net5.0\refint\SimplePhysi
 D:\CProjects\SimplePhysics2D\SimplePhysics2D\obj\Debug\net5.0\SimplePhysics2D.pdb
 D:\CProjects\SimplePhysics2D\SimplePhysics2D\obj\Debug\net5.0\ref\SimplePhysics2D.dll
 D:\CProjects\SimplePhysics2D\SimplePhysics2D\bin\Debug\net5.0\SimpleECS.pdb
+D:\CProjects\SimplePhysics2D\SimplePhysics2D\obj\Debug\net5.0\SimplePhysics2D.sourcelink.json

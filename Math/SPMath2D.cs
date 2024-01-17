@@ -4,13 +4,23 @@ namespace SimplePhysics2D
 {
     public static class SPMath2D
     {
+        public static readonly float VerySmallAmount = 0.0005f;
+
         public static float Length(SPVector2 other)
         {
             return MathF.Sqrt(other.X * other.X + other.Y * other.Y);
         }
+        public static float LengthSquared(SPVector2 other)
+        {
+            return other.X * other.X + other.Y * other.Y;
+        }
         public static float Distance(SPVector2 a, SPVector2 b)
         {
             return Length(a - b);
+        }
+        public static float DistanceSquared(SPVector2 a, SPVector2 b)
+        {
+            return LengthSquared(a - b);
         }
         public static SPVector2 Normalize(SPVector2 a)
         {
@@ -36,6 +46,14 @@ namespace SimplePhysics2D
                 return max;
             }
             return value;
+        }
+        public static bool NearlyEqual(float a, float b)
+        {
+            return MathF.Abs(a - b) < VerySmallAmount;
+        }
+        public static bool NearlyEqual(SPVector2 a, SPVector2 b)
+        {
+            return DistanceSquared(a, b) < VerySmallAmount * VerySmallAmount;
         }
     }
 }
