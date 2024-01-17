@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="SkiaSharp" Version="2.88.7" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="SimpleECS">
       <HintPath>Libary\SimpleECS.dll</HintPath>
     </Reference>

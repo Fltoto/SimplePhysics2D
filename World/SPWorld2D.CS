@@ -29,11 +29,14 @@ namespace SimplePhysics2D
         public static readonly int MinIterations = 1;
         public static readonly int MaxIterations = 128;
 
+        public int FPS { get; private set; }
+        private int fps;
         public CollideSolveType SolveType = CollideSolveType.Friction;
-        public int Iterations = 4;
+        public int Iterations = 2;
         public bool Running { get; private set; }
 
         private DateTime LastTime;
+        private DateTime lastfps;
         private SPVector2[] contactList;
         private SPVector2[] impulseList;
         private SPVector2[] raList;
@@ -82,11 +85,24 @@ namespace SimplePhysics2D
         {
             while (Running)
             {
-                await Task.Delay(1);
-                var time = (float)(DateTime.Now - LastTime).TotalSeconds;
-                LastTime = DateTime.Now;
-                Step(time, Iterations);
+                if (fps > 10000)
+                {
+                    await Task.Delay(1);
+                }
+                Update();
             }
+        }
+        private void Update() {
+            var time = (float)(DateTime.Now - LastTime).TotalSeconds;
+            fps++;
+            if ((DateTime.Now - lastfps).TotalSeconds > 1)
+            {
+                lastfps = DateTime.Now;
+                FPS = fps;
+                fps = 0;
+            }
+            LastTime = DateTime.Now;
+            Step(time, Iterations);
         }
         private void BroadPhase(SPBody2D[] l,float time,int Iterations) {
             for (int i=0;i<l.Length;i++) {
@@ -141,7 +157,7 @@ namespace SimplePhysics2D
                 bodyB.Move(mtv / 2f);
             }
         }
-        public void ResolveCollisionBasic(in SManifold contact)
+        private void ResolveCollisionBasic(in SManifold contact)
         {
             var bodyA = contact.BodyA;
             var bodyB = contact.BodyB;
@@ -168,7 +184,7 @@ namespace SimplePhysics2D
             bodyA.LinearVelocity -= impulse * bodyA.InvMass;
             bodyB.LinearVelocity += impulse * bodyB.InvMass;
         }
-        public void ResolveCollisionWithRotation(in SManifold contact)
+        private void ResolveCollisionWithRotation(in SManifold contact)
         {
             SPBody2D bodyA = contact.BodyA;
             SPBody2D bodyB = contact.BodyB;
@@ -247,7 +263,7 @@ namespace SimplePhysics2D
                 bodyB.AngularVelocity += SPMath2D.Cross(rb, impulse) * bodyB.InvInertia;
             }
         }
-        public void ResolveCollisionWithRotationAndFriction(in SManifold contact)
+        private void ResolveCollisionWithRotationAndFriction(in SManifold contact)
         {
             SPBody2D bodyA = contact.BodyA;
             SPBody2D bodyB = contact.BodyB;

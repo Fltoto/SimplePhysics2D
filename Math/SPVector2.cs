@@ -1,5 +1,4 @@
-﻿using SimplePhysics2D.Math;
-/*
+﻿/*
 # THIS FILE IS PART OF SimplePhysics2D
 # 
 # THIS PROGRAM IS FREE SOFTWARE, WE USED APACHE2.0 LICENSE.

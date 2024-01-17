@@ -1,7 +1,6 @@
 ﻿using SimpleECS;
 using SimplePhysics2D.BoudingBox;
 using SimplePhysics2D.Collision;
-using SimplePhysics2D.Math;
 using SimplePhysics2D.Shapes;
 using System;
 /*
@@ -22,7 +21,7 @@ namespace SimplePhysics2D.RigidBody
 
         private SPVector2 position;
         private SPVector2 linearVelocity;
-        public float rotation;
+        private float rotation;
         private float rotationalVelocity;
 
         private SPVector2 force;
@@ -46,7 +45,7 @@ namespace SimplePhysics2D.RigidBody
         public readonly float Height;
 
         public ShapeType2D ShapeType;
-        private readonly SPVector2[] Vertices;
+        private SPVector2[] Vertices;
         private bool transformUpdateRequired = true;
         private SPVector2[] transformVertices;
         private SAABB aabb;
@@ -66,7 +65,7 @@ namespace SimplePhysics2D.RigidBody
             this.rotationalVelocity = 0;
 
             this.Density = density;
-            this.Mass = mass;
+            this.Mass = mass ;
             this.Restitution = restiution;
             this.Area = area;
             this.IsStatic = isStatic;
@@ -89,7 +88,7 @@ namespace SimplePhysics2D.RigidBody
 
             if (ShapeType == ShapeType2D.Box)
             {
-                Vertices = CreateBoxVertices(Width * 2, Height * 2);
+                Vertices = CreateBoxVertices(Width , Height );
                 transformVertices = new SPVector2[Vertices.Length];
             }
             else
@@ -176,7 +175,39 @@ namespace SimplePhysics2D.RigidBody
             body = new SPBody2D(position, density, mass,inertia, restiution, area, isStatic, 0, width, height,staticFriction,dynamticFriction, ShapeType2D.Box);
             return true;
         }
-
+        public static bool CreatePolygonBody(SPVector2[] Vertices,float area,SPVector2 position, float density, bool isStatic, float restiution, float staticFriction, float dynamticFriction,
+out SPBody2D body, out string errormsg)
+        {
+            body = null;
+            errormsg = string.Empty;
+            if (area < SPWorld2D.MinBodySize)
+            {
+                errormsg = $"Area is too small, the min cirle area is {SPWorld2D.MinBodySize}";
+                return false;
+            }
+            if (area > SPWorld2D.MaxBodySize)
+            {
+                errormsg = $"Area is too larg, the max cirle area is {SPWorld2D.MaxBodySize}";
+                return false;
+            }
+            if (density < SPWorld2D.MinDensity)
+            {
+                errormsg = $"Density is too small, the min density is {SPWorld2D.MinDensity}";
+                return false;
+            }
+            if (density > SPWorld2D.MaxDensity)
+            {
+                errormsg = $"Density is too large, the max density is {SPWorld2D.MaxDensity}";
+                return false;
+            }
+            restiution = SPMath2D.Clamp(restiution, 0, 1);
+            var mass = area * density;
+            var inertia = (1f / 12) * mass * area;
+            body = new SPBody2D(position, density, mass, inertia, restiution, area, isStatic, 0, 1 ,1, staticFriction, dynamticFriction, ShapeType2D.Box);
+            body.Vertices = Vertices;
+            body.transformVertices = new SPVector2[Vertices.Length];
+            return true;
+        }
         public SPVector2[] GetTransformedVertices()
         {
             if (this.transformUpdateRequired)

@@ -9,7 +9,7 @@
 #
 # Copyright (c) 2024 Fltoto
 */
-namespace SimplePhysics2D.Math
+namespace SimplePhysics2D
 {
     internal struct Translation
     {
