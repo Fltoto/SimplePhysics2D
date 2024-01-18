@@ -63,7 +63,7 @@ namespace SimplePhysics2D.Raycast
         private static bool NarrowPhase(BoxRay ray, SPBody2D body, out RayCastInfo info)
         {
             info = new RayCastInfo();
-            var point = new SPVector2();
+            SPVector2 point;
             if (Collisions.Collide(ray.TempBody, body, out _, out _))
             {
                 Collisions.FindContacts(ray.TempBody, body, out SPVector2 p1, out SPVector2 p2, out int count);
