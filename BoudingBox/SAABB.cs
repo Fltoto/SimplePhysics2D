@@ -27,6 +27,9 @@ namespace SimplePhysics2D.BoudingBox
                 return (Max.Y - Min.Y);
             }
         }
+        public float Area { get {
+                return Width * Height;
+            } }
         public SAABB(SPVector2 Min,SPVector2 Max) {
             this.Min = Min;
             this.Max = Max;

@@ -1,5 +1,6 @@
 ﻿using SimplePhysics2D.BoudingBox;
 using SimplePhysics2D.RigidBody;
+using System;
 using System.Collections.Generic;
 
 namespace SimplePhysics2D.QuadTree
@@ -16,6 +17,7 @@ namespace SimplePhysics2D.QuadTree
         public SAABB Area { get; }
         public int Depth { get; }
         public int MaxDepth { get; }
+
         public SpaceTree Parent { get; }
         private List<SpaceTree> Children = new List<SpaceTree>();
         private List<SPBody2D> Items=new List<SPBody2D>();
@@ -42,16 +44,15 @@ namespace SimplePhysics2D.QuadTree
             }
         }
         private bool Splite() {
-            if (Children.Count>0) {
+            if (Children.Count > 0) {
                 return false;
             }
-            if (Depth>=MaxDepth) {
+            if (Depth >= MaxDepth) {
                 return false;
             }
-            var nextDepth = Depth + 1;
             var width = Area.Width / 2f;
             var height = Area.Height / 2f;
-
+            var nextDepth = Depth + 1;
             SAABB[] AABBS = new SAABB[4];
 
             AABBS[0] = new SAABB(Area.Min,Area.Min+new SPVector2(width,height));
@@ -71,14 +72,16 @@ namespace SimplePhysics2D.QuadTree
             {
                 lock (Items) {
                     Items.Add(body);
-                    if (Items.Count >= MaxContain)
+                    if (Items.Count >= MaxContain )
                     {
                         Splite();
-                        for (int i = 0; i < Items.Count; i++)
-                        {
-                            AddToChildren(Items[i]);
+                        if (Children.Count>0) {
+                            for (int i = 0; i < Items.Count; i++)
+                            {
+                                AddToChildren(Items[i]);
+                            }
+                            Items.Clear();
                         }
-                        Items.Clear();
                     }
                 }
             }

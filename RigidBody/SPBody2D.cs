@@ -51,6 +51,7 @@ namespace SimplePhysics2D.RigidBody
         public ShapeType2D ShapeType;
         public SPWorld2D SPWorld;
         public SAABB LastAABB;
+
         private SPVector2[] Vertices;
         private bool transformUpdateRequired = true;
         private SPVector2[] transformVertices;
@@ -263,6 +264,7 @@ out SPBody2D body, out string errormsg)
             aabb = new SAABB(minX, minY, maxX, maxY);
             aabbUpdateRequire = false;
         }
+        
         public void Step(float time,int Iterations)
         {
             LastAABB = aabb;

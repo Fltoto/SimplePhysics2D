@@ -8,7 +8,7 @@ using SimplePhysics2D.World;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
+
 /*
 # THIS FILE IS PART OF SimplePhysics2D
 # 
@@ -31,6 +31,8 @@ namespace SimplePhysics2D
         public static readonly int MinIterations = 1;
         public static readonly int MaxIterations = 128;
 
+        public float Duration = 0.01f;
+        public int MaxTreeDepth=16;
         public int FPS { get; private set; }
         private int fps;
         public CollideSolveType SolveType = CollideSolveType.Friction;
@@ -77,7 +79,7 @@ namespace SimplePhysics2D
             Running = true;
             Thread t = new Thread(() => { Loop(); });
             LastTime = DateTime.Now;
-            SpaceTree = new SpaceTree(WorldWide,0,1024);
+            SpaceTree = new SpaceTree(WorldWide,0,MaxTreeDepth);
             OnAddCom += OnAddBody;
             OnRemoveCom += OnRemoveBody;
             t.Start();
@@ -129,14 +131,10 @@ namespace SimplePhysics2D
                 BroadPhase();
             }
         }
-        private async void Loop()
+        private void Loop()
         {
             while (Running)
             {
-                if (fps > 10000)
-                {
-                    await Task.Delay(1);
-                }
                 Update();
             }
         }
@@ -149,13 +147,18 @@ namespace SimplePhysics2D
                 FPS = fps;
                 fps = 0;
             }
-            LastTime = DateTime.Now;
-            Step(time, Iterations);
+            if (time>=Duration) {
+                LastTime = DateTime.Now;
+                Step(time, Iterations);
+            }
         }
         private void BroadPhase() {
             List<SpaceTree> spaces = new List<SpaceTree>();
             SpaceTree.GetLastestTress(spaces);
             for (int x = 0;  x < spaces.Count;x++) {
+                if (!CheckSpace(spaces[x])) {
+                    continue;
+                }
                 var l = spaces[x].GetItems();
                 for (int i = 0; i < l.Length; i++)
                 {
@@ -177,6 +180,12 @@ namespace SimplePhysics2D
                     }
                 }
             }
+        }
+        /// <summary>
+        /// 用于检查空间是否启用，默认返回true,返回false则是不启用空间，则该空间内所有碰撞体都会停止碰撞，但是碰撞体的自我更新会持续进行。
+        /// </summary>
+        protected virtual bool CheckSpace(SpaceTree space) {
+            return true;
         }
         private void NarrowPhase(SPBody2D bodyA,SPBody2D  bodyB) {
             if (SolveType == CollideSolveType.DoNothing) {
