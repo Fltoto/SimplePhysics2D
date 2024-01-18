@@ -1,10 +1,9 @@
 ﻿using SimpleECS;
 using SimplePhysics2D.BoudingBox;
 using SimplePhysics2D.Collision;
-using SimplePhysics2D.QuadTree;
 using SimplePhysics2D.Shapes;
 using System;
-using System.Collections.Generic;
+
 /*
 # THIS FILE IS PART OF SimplePhysics2D
 # 
@@ -56,15 +55,15 @@ namespace SimplePhysics2D.RigidBody
         private bool transformUpdateRequired = true;
         private SPVector2[] transformVertices;
         private SAABB aabb;
-        private bool aabbUpdateRequire=true;
+        private bool aabbUpdateRequire = true;
 
         public float Rotation => rotation;
         public SPVector2 Position => position;
         public SPVector2 LinearVelocity { get => linearVelocity; set { linearVelocity = value; } }
-        public float AngularVelocity { get =>rotationalVelocity;set { rotationalVelocity = value; } }
+        public float AngularVelocity { get => rotationalVelocity; set { rotationalVelocity = value; } }
 
-        private SPBody2D(SPVector2 position, float density, float mass,float inertia, float restiution, float area,
-            bool isStatic, float radius, float width, float height,float staticFriction,float dynamticFriction, ShapeType2D shapetype)
+        private SPBody2D(SPVector2 position, float density, float mass, float inertia, float restiution, float area,
+            bool isStatic, float radius, float width, float height, float staticFriction, float dynamticFriction, ShapeType2D shapetype)
         {
             this.position = position;
             this.linearVelocity = SPVector2.Zero;
@@ -72,7 +71,7 @@ namespace SimplePhysics2D.RigidBody
             this.rotationalVelocity = 0;
 
             this.Density = density;
-            this.Mass = mass ;
+            this.Mass = mass;
             this.Restitution = restiution;
             this.Area = area;
             this.IsStatic = isStatic;
@@ -89,13 +88,14 @@ namespace SimplePhysics2D.RigidBody
             {
                 this.InvMass = 1f / Mass;
             }
-            else {
+            else
+            {
                 this.InvMass = 0;
             }
 
             if (ShapeType == ShapeType2D.Box)
             {
-                Vertices = CreateBoxVertices(Width , Height );
+                Vertices = CreateBoxVertices(Width, Height);
                 transformVertices = new SPVector2[Vertices.Length];
             }
             else
@@ -119,7 +119,7 @@ namespace SimplePhysics2D.RigidBody
             return ret;
         }
         public static bool CreateCircleBody(float radius, SPVector2 position, float density, bool isStatic, float restiution,
-            float staticFriction ,float dynamticFriction,out SPBody2D body, out string errormsg)
+            float staticFriction, float dynamticFriction, out SPBody2D body, out string errormsg)
         {
             body = null;
             errormsg = string.Empty;
@@ -147,10 +147,10 @@ namespace SimplePhysics2D.RigidBody
             restiution = SPMath2D.Clamp(restiution, 0, 1);
             float mass = area * density;
             float inertia = (1f / 2f) * mass * radius * radius;
-            body = new SPBody2D(position, density, mass , inertia, restiution, area, isStatic, radius, 0, 0,staticFriction,dynamticFriction, ShapeType2D.Circle);
+            body = new SPBody2D(position, density, mass, inertia, restiution, area, isStatic, radius, 0, 0, staticFriction, dynamticFriction, ShapeType2D.Circle);
             return true;
         }
-        public static bool CreateBoxBody(float width, float height, SPVector2 position, float density, bool isStatic, float restiution,float staticFriction,float dynamticFriction,
+        public static bool CreateBoxBody(float width, float height, SPVector2 position, float density, bool isStatic, float restiution, float staticFriction, float dynamticFriction,
     out SPBody2D body, out string errormsg)
         {
             body = null;
@@ -179,10 +179,10 @@ namespace SimplePhysics2D.RigidBody
             restiution = SPMath2D.Clamp(restiution, 0, 1);
             var mass = area * density;
             var inertia = (1f / 12) * mass * (width * width + height * height);
-            body = new SPBody2D(position, density, mass,inertia, restiution, area, isStatic, 0, width, height,staticFriction,dynamticFriction, ShapeType2D.Box);
+            body = new SPBody2D(position, density, mass, inertia, restiution, area, isStatic, 0, width, height, staticFriction, dynamticFriction, ShapeType2D.Box);
             return true;
         }
-        public static bool CreatePolygonBody(SPVector2[] Vertices,float area,SPVector2 position, float density, bool isStatic, float restiution, float staticFriction, float dynamticFriction,
+        public static bool CreatePolygonBody(SPVector2[] Vertices, float area, SPVector2 position, float density, bool isStatic, float restiution, float staticFriction, float dynamticFriction,
 out SPBody2D body, out string errormsg)
         {
             body = null;
@@ -210,7 +210,7 @@ out SPBody2D body, out string errormsg)
             restiution = SPMath2D.Clamp(restiution, 0, 1);
             var mass = area * density;
             var inertia = (1f / 12) * mass * area;
-            body = new SPBody2D(position, density, mass, inertia, restiution, area, isStatic, 0, 1 ,1, staticFriction, dynamticFriction, ShapeType2D.Box);
+            body = new SPBody2D(position, density, mass, inertia, restiution, area, isStatic, 0, 1, 1, staticFriction, dynamticFriction, ShapeType2D.Box);
             body.Vertices = Vertices;
             body.transformVertices = new SPVector2[Vertices.Length];
             return true;
@@ -230,11 +230,14 @@ out SPBody2D body, out string errormsg)
             return transformVertices;
         }
 
-        public SAABB GetAABB() {
+        public SAABB GetAABB()
+        {
             return aabb;
         }
-        public void UpdateAABB() {
-            if (!aabbUpdateRequire) {
+        public void UpdateAABB()
+        {
+            if (!aabbUpdateRequire)
+            {
                 return;
             }
             float minX = float.MaxValue;
@@ -264,15 +267,17 @@ out SPBody2D body, out string errormsg)
             aabb = new SAABB(minX, minY, maxX, maxY);
             aabbUpdateRequire = false;
         }
-        
-        public void Step(float time,int Iterations)
+
+        public void Step(float time, int Iterations)
         {
             LastAABB = aabb;
             UpdateAABB();
-            if (!LastAABB.Equals(aabb)) {
+            if (!LastAABB.Equals(aabb))
+            {
                 SPWorld.UpdateBodyTree(this);
             }
-            if (IsStatic || IsTrigger) {
+            if (IsStatic || IsTrigger)
+            {
                 linearVelocity = SPVector2.Zero;
                 rotationalVelocity = 0;
                 force = SPVector2.Zero;

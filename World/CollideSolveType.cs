@@ -2,6 +2,6 @@
 {
     public enum CollideSolveType
     {
-        DoNothing,Seprate,Basic,Rotation,Friction
+        DoNothing, Seprate, Basic, Rotation, Friction
     }
 }

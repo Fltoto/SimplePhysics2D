@@ -1,5 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SimplePhysics2D
 {
@@ -64,11 +64,11 @@ namespace SimplePhysics2D
         {
             int count = list.Count;
 
-            if(index >= count)
+            if (index >= count)
             {
                 return list[index % count];
             }
-            else if(index < 0)
+            else if (index < 0)
             {
                 return list[(index % count) + count];
             }

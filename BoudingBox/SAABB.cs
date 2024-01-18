@@ -16,31 +16,41 @@ namespace SimplePhysics2D.BoudingBox
     {
         public readonly SPVector2 Min;
         public readonly SPVector2 Max;
-        public float Width {
-            get {
+        public float Width
+        {
+            get
+            {
                 return (Max.X - Min.X);
             }
         }
         public float Height
         {
-            get {
+            get
+            {
                 return (Max.Y - Min.Y);
             }
         }
-        public float Area { get {
+        public float Area
+        {
+            get
+            {
                 return Width * Height;
-            } }
-        public SAABB(SPVector2 Min,SPVector2 Max) {
+            }
+        }
+        public SAABB(SPVector2 Min, SPVector2 Max)
+        {
             this.Min = Min;
             this.Max = Max;
         }
 
-        public SAABB(float minX,float minY,float maxX,float maxY) {
-            this.Min = new SPVector2(minX,minY);
-            this.Max = new SPVector2(maxX,maxY);
+        public SAABB(float minX, float minY, float maxX, float maxY)
+        {
+            this.Min = new SPVector2(minX, minY);
+            this.Max = new SPVector2(maxX, maxY);
         }
-        public bool Insect(SAABB Other) {
-            return Collisions.IntersectAABBs(this,Other);
+        public bool Insect(SAABB Other)
+        {
+            return Collisions.IntersectAABBs(this, Other);
         }
 
         public override bool Equals(object obj)

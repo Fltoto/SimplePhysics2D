@@ -12,7 +12,8 @@ namespace SimplePhysics2D.Collision
         public readonly SPVector2 Contact2;
         public readonly int ContactCount;
 
-        public SManifold(SPBody2D bodya,SPBody2D bodyb,SPVector2 normal,float depth,SPVector2 contact1,SPVector2 contact2,int contactCount) {
+        public SManifold(SPBody2D bodya, SPBody2D bodyb, SPVector2 normal, float depth, SPVector2 contact1, SPVector2 contact2, int contactCount)
+        {
             BodyA = bodya;
             BodyB = bodyb;
             Normal = normal;

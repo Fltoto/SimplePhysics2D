@@ -32,14 +32,14 @@ namespace SimplePhysics2D
         public static readonly int MaxIterations = 128;
 
         public float Duration = 0.01f;
-        public int MaxTreeDepth=16;
+        public int MaxTreeDepth = 16;
         public int FPS { get; private set; }
         private int fps;
         public CollideSolveType SolveType = CollideSolveType.Friction;
         public int Iterations = 2;
         public bool Running { get; private set; }
 
-        public readonly SAABB WorldWide = new SAABB(new SPVector2(-100000,-100000),new SPVector2(100000,100000));
+        public readonly SAABB WorldWide = new SAABB(new SPVector2(-100000, -100000), new SPVector2(100000, 100000));
 
         private DateTime LastTime;
         private DateTime lastfps;
@@ -51,7 +51,8 @@ namespace SimplePhysics2D
         private float[] jList;
         private SpaceTree SpaceTree;
 
-        public SPWorld2D() {
+        public SPWorld2D()
+        {
             this.contactList = new SPVector2[2];
             this.impulseList = new SPVector2[2];
             this.raList = new SPVector2[2];
@@ -59,7 +60,8 @@ namespace SimplePhysics2D
             this.frictionImpulseList = new SPVector2[2];
             this.jList = new float[2];
         }
-        public SPWorld2D(SAABB WorldWide) {
+        public SPWorld2D(SAABB WorldWide)
+        {
             this.contactList = new SPVector2[2];
             this.impulseList = new SPVector2[2];
             this.raList = new SPVector2[2];
@@ -79,23 +81,28 @@ namespace SimplePhysics2D
             Running = true;
             Thread t = new Thread(() => { Loop(); });
             LastTime = DateTime.Now;
-            SpaceTree = new SpaceTree(WorldWide,0,MaxTreeDepth);
+            SpaceTree = new SpaceTree(WorldWide, 0, MaxTreeDepth);
             OnAddCom += OnAddBody;
             OnRemoveCom += OnRemoveBody;
             t.Start();
         }
-        private void OnAddBody(SPBody2D body) {
-            lock (treetoadd) {
+        private void OnAddBody(SPBody2D body)
+        {
+            lock (treetoadd)
+            {
                 treetoadd.Add(body);
             }
             body.SPWorld = this;
         }
-        private void OnRemoveBody(SPBody2D body) {
-            lock (treetoremove) {
+        private void OnRemoveBody(SPBody2D body)
+        {
+            lock (treetoremove)
+            {
                 treetoremove.Add(body);
             }
         }
-        public void UpdateBodyTree(SPBody2D body) {
+        public void UpdateBodyTree(SPBody2D body)
+        {
             SpaceTree.Update(body);
         }
         public void Shutdown()
@@ -110,20 +117,25 @@ namespace SimplePhysics2D
         {
             Iterations = (int)SPMath2D.Clamp(Iterations, MinIterations, MaxIterations);
             var l = GetAllComponents();
-            RayCaster.SetWorld(SpaceTree) ;
-            lock (treetoadd) {
-                for (int i=0;i<treetoadd.Count;i++) {
+            RayCaster.SetWorld(SpaceTree);
+            lock (treetoadd)
+            {
+                for (int i = 0; i < treetoadd.Count; i++)
+                {
                     SpaceTree.Add(treetoadd[i]);
                 }
                 treetoadd.Clear();
             }
-            lock (treetoremove) {
-                for (int i=0;i<treetoremove.Count;i++) {
+            lock (treetoremove)
+            {
+                for (int i = 0; i < treetoremove.Count; i++)
+                {
                     SpaceTree.Remove(treetoremove[i]);
                 }
                 treetoremove.Clear();
             }
-            for (int it = 0; it < Iterations; it++) {
+            for (int it = 0; it < Iterations; it++)
+            {
                 for (int i = 0; i < l.Length; i++)
                 {
                     l[i].Step(time, Iterations);
@@ -138,7 +150,8 @@ namespace SimplePhysics2D
                 Update();
             }
         }
-        private void Update() {
+        private void Update()
+        {
             var time = (float)(DateTime.Now - LastTime).TotalSeconds;
             fps++;
             if ((DateTime.Now - lastfps).TotalSeconds > 1)
@@ -147,16 +160,20 @@ namespace SimplePhysics2D
                 FPS = fps;
                 fps = 0;
             }
-            if (time>=Duration) {
+            if (time >= Duration)
+            {
                 LastTime = DateTime.Now;
                 Step(time, Iterations);
             }
         }
-        private void BroadPhase() {
+        private void BroadPhase()
+        {
             List<SpaceTree> spaces = new List<SpaceTree>();
             SpaceTree.GetLastestTress(spaces);
-            for (int x = 0;  x < spaces.Count;x++) {
-                if (!CheckSpace(spaces[x])) {
+            for (int x = 0; x < spaces.Count; x++)
+            {
+                if (!CheckSpace(spaces[x]))
+                {
                     continue;
                 }
                 var l = spaces[x].GetItems();
@@ -184,21 +201,26 @@ namespace SimplePhysics2D
         /// <summary>
         /// 用于检查空间是否启用，默认返回true,返回false则是不启用空间，则该空间内所有碰撞体都会停止碰撞，但是碰撞体的自我更新会持续进行。
         /// </summary>
-        protected virtual bool CheckSpace(SpaceTree space) {
+        protected virtual bool CheckSpace(SpaceTree space)
+        {
             return true;
         }
-        private void NarrowPhase(SPBody2D bodyA,SPBody2D  bodyB) {
-            if (SolveType == CollideSolveType.DoNothing) {
+        private void NarrowPhase(SPBody2D bodyA, SPBody2D bodyB)
+        {
+            if (SolveType == CollideSolveType.DoNothing)
+            {
                 return;
             }
-            if (Collisions.Collide(bodyA,bodyB,out SPVector2 normal,out float depth)) {
-                SeparateBodies(bodyA,bodyB,normal*depth);
+            if (Collisions.Collide(bodyA, bodyB, out SPVector2 normal, out float depth))
+            {
+                SeparateBodies(bodyA, bodyB, normal * depth);
                 Collisions.FindContacts(bodyA, bodyB, out SPVector2 contact1, out SPVector2 contact2, out int contactCount);
                 SManifold contact = new SManifold(bodyA, bodyB, normal, depth, contact1, contact2, contactCount);
-                switch (SolveType) {
-                    case CollideSolveType.Basic: { ResolveCollisionBasic(contact); }break;
-                    case CollideSolveType.Rotation: { ResolveCollisionWithRotation(contact); }break;
-                    case CollideSolveType.Friction: { ResolveCollisionWithRotationAndFriction(contact); }break;
+                switch (SolveType)
+                {
+                    case CollideSolveType.Basic: { ResolveCollisionBasic(contact); } break;
+                    case CollideSolveType.Rotation: { ResolveCollisionWithRotation(contact); } break;
+                    case CollideSolveType.Friction: { ResolveCollisionWithRotationAndFriction(contact); } break;
                 }
             }
         }
@@ -232,19 +254,21 @@ namespace SimplePhysics2D
             bodyA.OnCollide?.Invoke(contact);
             bodyB.OnCollide?.Invoke(contact);
 
-            if (bodyA.IsTrigger || bodyB.IsTrigger) {
+            if (bodyA.IsTrigger || bodyB.IsTrigger)
+            {
                 return;
             }
 
             SPVector2 relativeVelocity = bodyB.LinearVelocity - bodyA.LinearVelocity;
 
-            if (SPMath2D.Dot(relativeVelocity,normal)>0) {
+            if (SPMath2D.Dot(relativeVelocity, normal) > 0)
+            {
                 return;
             }
 
             float e = MathF.Min(bodyA.Restitution, bodyB.Restitution);
             float j = -(1f + e) * SPMath2D.Dot(relativeVelocity, normal);
-            j /= bodyA.InvMass+ bodyB.InvMass;
+            j /= bodyA.InvMass + bodyB.InvMass;
             SPVector2 impulse = j * normal;
             bodyA.LinearVelocity -= impulse * bodyA.InvMass;
             bodyB.LinearVelocity += impulse * bodyB.InvMass;

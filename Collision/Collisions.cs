@@ -49,7 +49,8 @@ namespace SimplePhysics2D.Collision
 
             distanceSquared = SPMath2D.DistanceSquared(p, cp);
         }
-        public static void FindContacts(SPBody2D bodyA,SPBody2D bodyB,out SPVector2 contact1,out SPVector2 contact2,out int contactCount) {
+        public static void FindContacts(SPBody2D bodyA, SPBody2D bodyB, out SPVector2 contact1, out SPVector2 contact2, out int contactCount)
+        {
             contact1 = SPVector2.Zero;
             contact2 = SPVector2.Zero;
             contactCount = 0;
@@ -173,7 +174,8 @@ namespace SimplePhysics2D.Collision
                 }
             }
         }
-        private static void FindCirclesContactPoint(SPVector2 centerA,float radiusA,SPVector2 centerB,out SPVector2 cp) {
+        private static void FindCirclesContactPoint(SPVector2 centerA, float radiusA, SPVector2 centerB, out SPVector2 cp)
+        {
             SPVector2 ab = centerB - centerA;
             SPVector2 dir = SPMath2D.Normalize(ab);
             cp = centerA + dir * radiusA;
@@ -209,7 +211,7 @@ namespace SimplePhysics2D.Collision
             }
             return false;
         }
-        public static bool IntersectCirclePolygons(SPVector2 center, float circleRadius,SPVector2 polygonCenter, SPVector2[] vertices, out SPVector2 normal, out float depth)
+        public static bool IntersectCirclePolygons(SPVector2 center, float circleRadius, SPVector2 polygonCenter, SPVector2[] vertices, out SPVector2 normal, out float depth)
         {
             normal = SPVector2.Zero;
             depth = float.MaxValue;
@@ -295,7 +297,7 @@ namespace SimplePhysics2D.Collision
                 max = t;
             }
         }
-        public static bool IntersectPolygons(SPVector2[] verticesA,SPVector2 centerA, SPVector2[] verticesB,SPVector2 centerB, out SPVector2 normal, out float depth)
+        public static bool IntersectPolygons(SPVector2[] verticesA, SPVector2 centerA, SPVector2[] verticesB, SPVector2 centerB, out SPVector2 normal, out float depth)
         {
             normal = SPVector2.Zero;
             depth = float.MaxValue;

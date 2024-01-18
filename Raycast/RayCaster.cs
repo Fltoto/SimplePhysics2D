@@ -13,18 +13,23 @@ namespace SimplePhysics2D.Raycast
         {
             RayCaster.tree = tree;
         }
-        public static bool Cast(SPVector2 Start, SPVector2 End, float Width, out RayCastInfo[] infos) {
+        public static bool Cast(SPVector2 Start, SPVector2 End, float Width, out RayCastInfo[] infos)
+        {
             infos = new RayCastInfo[0];
             var ray = new BoxRay(Start, End, Width);
             List<RayCastInfo> ifs = new List<RayCastInfo>();
-            if (BroadPhase(ray,out SPBody2D[] bodies)) {
-                for (int i=0;i<bodies.Length;i++) {
-                    if (NarrowPhase(ray, bodies[i],out RayCastInfo info)) {
+            if (BroadPhase(ray, out SPBody2D[] bodies))
+            {
+                for (int i = 0; i < bodies.Length; i++)
+                {
+                    if (NarrowPhase(ray, bodies[i], out RayCastInfo info))
+                    {
                         ifs.Add(info);
                     }
                 }
             }
-            if (ifs.Count>0) {
+            if (ifs.Count > 0)
+            {
                 infos = ifs.ToArray();
                 return true;
             }
@@ -59,17 +64,18 @@ namespace SimplePhysics2D.Raycast
         {
             info = new RayCastInfo();
             var point = new SPVector2();
-            if (Collisions.Collide(ray.TempBody,body,out _,out _))
+            if (Collisions.Collide(ray.TempBody, body, out _, out _))
             {
-                Collisions.FindContacts(ray.TempBody,body,out SPVector2 p1,out SPVector2 p2,out int count);
+                Collisions.FindContacts(ray.TempBody, body, out SPVector2 p1, out SPVector2 p2, out int count);
                 if (count == 2)
                 {
                     point = p2;
                 }
-                else {
+                else
+                {
                     point = p1;
                 }
-                info = new RayCastInfo(body,point,SPMath2D.Distance(ray.Start,point));
+                info = new RayCastInfo(body, point, SPMath2D.Distance(ray.Start, point));
                 return true;
             }
             return false;
