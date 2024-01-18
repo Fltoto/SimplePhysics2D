@@ -12,7 +12,7 @@ namespace SimplePhysics2D.QuadTree
         public int MaxDepth { get; }
         public SpaceTree Parent { get; }
         private List<SpaceTree> Children = new List<SpaceTree>();
-        private List<SPBody2D> Items = new List<SPBody2D>();
+        private List<SPBody2D> Items=new List<SPBody2D>();
 
         public SpaceTree(SAABB Area,int Depth,int MaxDepth,SpaceTree Parent=null) {
             this.Area = Area;
@@ -28,6 +28,11 @@ namespace SimplePhysics2D.QuadTree
         private void RemoveChild(SpaceTree t) {
             lock (Children) {
                 Children.Remove(t);
+            }
+        }
+        private void ClearChild() {
+            lock (Children) {
+                Children.Clear();
             }
         }
         private bool Splite() {
@@ -46,9 +51,9 @@ namespace SimplePhysics2D.QuadTree
             AABBS[0] = new SAABB(Area.Min,Area.Min+new SPVector2(width,height));
             AABBS[1] = new SAABB(Area.Min+new SPVector2(width,0),Area.Min+new SPVector2(width*2,height));
             AABBS[2] = new SAABB(Area.Min + new SPVector2(width, height), Area.Min + new SPVector2(width*2,height*2)) ;
-            AABBS[3] = new SAABB(Area.Min+new SPVector2(0,height),Area.Min+new SPVector2(0,height*2));
+            AABBS[3] = new SAABB(Area.Min+new SPVector2(0,height),Area.Min+new SPVector2(width,height*2));
             for (int i=0;i<AABBS.Length;i++) {
-                AddChild(new SpaceTree(AABBS[0],nextDepth,MaxDepth,this));
+                AddChild(new SpaceTree(AABBS[i],nextDepth,MaxDepth,this));
             }
             return true;
         }
@@ -56,29 +61,67 @@ namespace SimplePhysics2D.QuadTree
             if (!Area.Insect(body.GetAABB())) {
                 return;
             }
-            lock (Items) {
-                Items.Add(body);
+            if (Children.Count == 0)
+            {
+                lock (Items)
+                {
+                    Items.Add(body);
+                }
+                if (Items.Count >= MaxContain)
+                {
+                    Splite();
+                    lock (Items) {
+                        for (int i = 0; i < Items.Count; i++)
+                        {
+                            AddToChildren(Items[i]);
+                        }
+                        Items.Clear();
+                    }
+                }
             }
-            body.GetInTree(this);
-            if (Children.Count>16) {
-                Splite();
+            else {
+                AddToChildren(body);
             }
+        }
+        private void AddToChildren(SPBody2D body) {
             for (int i=0;i<Children.Count;i++) {
                 Children[i].Add(body);
             }
         }
-        public void Remove(SPBody2D body) {
-            if (body.GetOutTree(this)) {
-                lock (Items) {
-                    Items.Remove(body);
+        public bool Remove(SPBody2D body) {
+            if (Area.Insect(body.LastAABB)) {
+                bool t = false;
+                if (Items.Count>0) {
+                    lock (Items) {
+                        t= Items.Remove(body);
+                    }
+                }
+                if (t) {
+                    if (GetItemsCount() == 0)
+                    {
+                        ClearChild();
+                    }
+                    return true;
                 }
                 for (int i=0;i<Children.Count;i++) {
                     Children[i].Remove(body);
                 }
-                if (Items.Count==0) {
-                    Parent.RemoveChild(this);
+            }
+            return false;
+        }
+        public int GetItemsCount() {
+            int c = 0;
+            if (Children.Count > 0)
+            {
+                for (int i = 0; i < Children.Count; i++)
+                {
+                    c += Children[i].GetItemsCount();
                 }
             }
+            else if(Items!=null){
+                c += Items.Count;
+            }
+            return c;
         }
         public void Update(SPBody2D body) {
             Remove(body);
@@ -112,10 +155,15 @@ namespace SimplePhysics2D.QuadTree
                 }
             }
             else {
-                outs.Add(this);
+                if (Items!=null) {
+                    outs.Add(this);
+                }
             }
         }
         public SPBody2D[] GetItems() {
+            if (Items==null) {
+                return new SPBody2D[0];
+            }
             lock (Items) {
                 return Items.ToArray();
             }

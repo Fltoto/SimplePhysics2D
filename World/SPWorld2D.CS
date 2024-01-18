@@ -1,10 +1,12 @@
 ﻿using SimpleECS;
 using SimplePhysics2D.BoudingBox;
 using SimplePhysics2D.Collision;
+using SimplePhysics2D.QuadTree;
 using SimplePhysics2D.Raycast;
 using SimplePhysics2D.RigidBody;
 using SimplePhysics2D.World;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 /*
@@ -35,6 +37,8 @@ namespace SimplePhysics2D
         public int Iterations = 2;
         public bool Running { get; private set; }
 
+        public readonly SAABB WorldWide = new SAABB(new SPVector2(-100000,-100000),new SPVector2(100000,100000));
+
         private DateTime LastTime;
         private DateTime lastfps;
         private SPVector2[] contactList;
@@ -43,6 +47,7 @@ namespace SimplePhysics2D
         private SPVector2[] rbList;
         private SPVector2[] frictionImpulseList;
         private float[] jList;
+        private SpaceTree SpaceTree;
 
         public SPWorld2D() {
             this.contactList = new SPVector2[2];
@@ -51,6 +56,15 @@ namespace SimplePhysics2D
             this.rbList = new SPVector2[2];
             this.frictionImpulseList = new SPVector2[2];
             this.jList = new float[2];
+        }
+        public SPWorld2D(SAABB WorldWide) {
+            this.contactList = new SPVector2[2];
+            this.impulseList = new SPVector2[2];
+            this.raList = new SPVector2[2];
+            this.rbList = new SPVector2[2];
+            this.frictionImpulseList = new SPVector2[2];
+            this.jList = new float[2];
+            this.WorldWide = WorldWide;
         }
 
         public void Run()
@@ -62,7 +76,20 @@ namespace SimplePhysics2D
             Running = true;
             Thread t = new Thread(() => { Loop(); });
             LastTime = DateTime.Now;
+            SpaceTree = new SpaceTree(WorldWide,0,1024);
+            OnAddCom += OnAddBody;
+            OnRemoveCom += OnRemoveBody;
             t.Start();
+        }
+        private void OnAddBody(SPBody2D body) {
+            SpaceTree.Add(body);
+            body.SPWorld = this;
+        }
+        private void OnRemoveBody(SPBody2D body) {
+            SpaceTree.Remove(body);
+        }
+        public void UpdateBodyTree(SPBody2D body) {
+            SpaceTree.Update(body);
         }
         public void Shutdown()
         {
@@ -77,8 +104,12 @@ namespace SimplePhysics2D
             Iterations = (int)SPMath2D.Clamp(Iterations, MinIterations, MaxIterations);
             var l = GetAllComponents();
             RayCaster.SetContents(l) ;
+            for (int i = 0; i < l.Length; i++)
+            {
+                l[i].Step(time, Iterations);
+            }
             for (int it = 0; it < Iterations; it++) {
-                BroadPhase(l,time,Iterations);
+                BroadPhase(time,Iterations);
             }
         }
         private async void Loop()
@@ -104,21 +135,29 @@ namespace SimplePhysics2D
             LastTime = DateTime.Now;
             Step(time, Iterations);
         }
-        private void BroadPhase(SPBody2D[] l,float time,int Iterations) {
-            for (int i=0;i<l.Length;i++) {
-                SPBody2D bodyA = l[i];
-                bodyA.Step(time,Iterations);
-                SAABB aabbA = bodyA.GetAABB();
-                for (int j=0;j<l.Length;j++) {
-                    SPBody2D bodyB = l[j];
-                    SAABB aabbB = bodyB.GetAABB();
-                    if (bodyA==bodyB || (bodyA.IsStatic && bodyB.IsStatic)) {
-                        continue;
+        private void BroadPhase(float time,int Iterations) {
+            List<SpaceTree> spaces = new List<SpaceTree>();
+            SpaceTree.GetLastestTress(spaces);
+            for (int x = 0;  x < spaces.Count;x++) {
+                var l = spaces[x].GetItems();
+                for (int i = 0; i < l.Length; i++)
+                {
+                    SPBody2D bodyA = l[i];
+                    SAABB aabbA = bodyA.GetAABB();
+                    for (int j = 0; j < l.Length; j++)
+                    {
+                        SPBody2D bodyB = l[j];
+                        SAABB aabbB = bodyB.GetAABB();
+                        if (bodyA == bodyB || (bodyA.IsStatic && bodyB.IsStatic))
+                        {
+                            continue;
+                        }
+                        if (!Collisions.IntersectAABBs(aabbA, aabbB))
+                        {
+                            continue;
+                        }
+                        NarrowPhase(bodyA, bodyB);
                     }
-                    if (!Collisions.IntersectAABBs(aabbA,aabbB)) {
-                        continue;
-                    }
-                    NarrowPhase(bodyA,bodyB);
                 }
             }
         }

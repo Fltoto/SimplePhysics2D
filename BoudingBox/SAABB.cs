@@ -39,5 +39,11 @@ namespace SimplePhysics2D.BoudingBox
         public bool Insect(SAABB Other) {
             return Collisions.IntersectAABBs(this,Other);
         }
+
+        public override bool Equals(object obj)
+        {
+            var b = (SAABB)obj;
+            return ((Min.Equals(b.Min) && (Max.Equals(b.Max))));
+        }
     }
 }

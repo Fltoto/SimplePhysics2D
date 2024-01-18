@@ -48,8 +48,8 @@ namespace SimplePhysics2D.RigidBody
         public readonly float Height;
 
         public ShapeType2D ShapeType;
-
-        private List<SpaceTree> Trees= new List<SpaceTree>();
+        public SPWorld2D SPWorld;
+        public SAABB LastAABB;
         private SPVector2[] Vertices;
         private bool transformUpdateRequired = true;
         private SPVector2[] transformVertices;
@@ -229,8 +229,11 @@ out SPBody2D body, out string errormsg)
         }
 
         public SAABB GetAABB() {
+            return aabb;
+        }
+        private void UpdateAABB() {
             if (!aabbUpdateRequire) {
-                return aabb;
+                return;
             }
             float minX = float.MaxValue;
             float minY = float.MaxValue;
@@ -256,27 +259,16 @@ out SPBody2D body, out string errormsg)
                 }
             }
             else throw new Exception("UnKnown type");
-            aabb=new SAABB(minX,minY,maxX,maxY);
+            aabb = new SAABB(minX, minY, maxX, maxY);
             aabbUpdateRequire = false;
-            return aabb;
-        }
-        public void GetInTree(SpaceTree tree) {
-            lock(Trees){
-                Trees.Add(tree);
-            }
-        }
-        public bool GetOutTree(SpaceTree tree) {
-            lock (Trees) {
-                return Trees.Remove(tree);
-            }
-        }
-        public SpaceTree[] GetTrees() {
-            lock (Trees) {
-                return Trees.ToArray();
-            }
         }
         public void Step(float time,int Iterations)
         {
+            LastAABB = aabb;
+            UpdateAABB();
+            if (!LastAABB.Equals(aabb)) {
+                SPWorld.UpdateBodyTree(this);
+            }
             if (IsStatic || IsTrigger) {
                 linearVelocity = SPVector2.Zero;
                 rotationalVelocity = 0;
