@@ -1,4 +1,5 @@
 ﻿using SimplePhysics2D.Collision;
+using SimplePhysics2D.QuadTree;
 using SimplePhysics2D.RigidBody;
 using System.Collections.Generic;
 
@@ -6,11 +7,11 @@ namespace SimplePhysics2D.Raycast
 {
     public static class RayCaster
     {
-        private static SPBody2D[] bodies = new SPBody2D[0];
+        private static SpaceTree tree;
 
-        public static void SetContents(SPBody2D[] bodies)
+        public static void SetWorld(SpaceTree tree)
         {
-            RayCaster.bodies = bodies;
+            RayCaster.tree = tree;
         }
         public static bool Cast(SPVector2 Start, SPVector2 End, float Width, out RayCastInfo[] infos) {
             infos = new RayCastInfo[0];
@@ -32,13 +33,19 @@ namespace SimplePhysics2D.Raycast
         private static bool BroadPhase(BoxRay ray, out SPBody2D[] bodies)
         {
             bodies = new SPBody2D[0];
-            var b = RayCaster.bodies;
+            List<SpaceTree> spaces = new List<SpaceTree>();
+            tree.GetLastestTress(spaces);
             List<SPBody2D> bs = new List<SPBody2D>();
-            for (int i = 0; i < b.Length; i++)
+            ray.TempBody.UpdateAABB();
+            for (int x = 0; x < spaces.Count; x++)
             {
-                if (Collisions.IntersectAABBs(b[i].GetAABB(), ray.TempBody.GetAABB()))
+                var b = spaces[x].GetItems();
+                for (int i = 0; i < b.Length; i++)
                 {
-                    bs.Add(b[i]);
+                    if (Collisions.IntersectAABBs(b[i].GetAABB(), ray.TempBody.GetAABB()))
+                    {
+                        bs.Add(b[i]);
+                    }
                 }
             }
             if (bs.Count > 0)

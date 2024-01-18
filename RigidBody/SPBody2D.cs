@@ -42,6 +42,7 @@ namespace SimplePhysics2D.RigidBody
         public bool IsStatic;
         public bool IsTrigger;
         public bool RotFreeze;
+        public bool VelocityFreeze;
 
         public readonly float Radius;
         public readonly float Width;
@@ -231,7 +232,7 @@ out SPBody2D body, out string errormsg)
         public SAABB GetAABB() {
             return aabb;
         }
-        private void UpdateAABB() {
+        public void UpdateAABB() {
             if (!aabbUpdateRequire) {
                 return;
             }
@@ -282,6 +283,10 @@ out SPBody2D body, out string errormsg)
             time /= Iterations;
             SPVector2 acceleration = this.force / this.Mass;
             this.linearVelocity += acceleration * time;
+            if (VelocityFreeze)
+            {
+                linearVelocity = SPVector2.Zero;
+            }
             Move(linearVelocity * time);
             Rotate(rotationalVelocity * time);
             this.force = SPVector2.Zero;

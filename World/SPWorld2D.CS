@@ -66,7 +66,8 @@ namespace SimplePhysics2D
             this.jList = new float[2];
             this.WorldWide = WorldWide;
         }
-
+        private List<SPBody2D> treetoremove = new List<SPBody2D>();
+        private List<SPBody2D> treetoadd = new List<SPBody2D>();
         public void Run()
         {
             if (Running)
@@ -82,11 +83,15 @@ namespace SimplePhysics2D
             t.Start();
         }
         private void OnAddBody(SPBody2D body) {
-            SpaceTree.Add(body);
+            lock (treetoadd) {
+                treetoadd.Add(body);
+            }
             body.SPWorld = this;
         }
         private void OnRemoveBody(SPBody2D body) {
-            SpaceTree.Remove(body);
+            lock (treetoremove) {
+                treetoremove.Add(body);
+            }
         }
         public void UpdateBodyTree(SPBody2D body) {
             SpaceTree.Update(body);
@@ -103,13 +108,25 @@ namespace SimplePhysics2D
         {
             Iterations = (int)SPMath2D.Clamp(Iterations, MinIterations, MaxIterations);
             var l = GetAllComponents();
-            RayCaster.SetContents(l) ;
-            for (int i = 0; i < l.Length; i++)
-            {
-                l[i].Step(time, Iterations);
+            RayCaster.SetWorld(SpaceTree) ;
+            lock (treetoadd) {
+                for (int i=0;i<treetoadd.Count;i++) {
+                    SpaceTree.Add(treetoadd[i]);
+                }
+                treetoadd.Clear();
+            }
+            lock (treetoremove) {
+                for (int i=0;i<treetoremove.Count;i++) {
+                    SpaceTree.Remove(treetoremove[i]);
+                }
+                treetoremove.Clear();
             }
             for (int it = 0; it < Iterations; it++) {
-                BroadPhase(time,Iterations);
+                for (int i = 0; i < l.Length; i++)
+                {
+                    l[i].Step(time, Iterations);
+                }
+                BroadPhase();
             }
         }
         private async void Loop()
@@ -135,7 +152,7 @@ namespace SimplePhysics2D
             LastTime = DateTime.Now;
             Step(time, Iterations);
         }
-        private void BroadPhase(float time,int Iterations) {
+        private void BroadPhase() {
             List<SpaceTree> spaces = new List<SpaceTree>();
             SpaceTree.GetLastestTress(spaces);
             for (int x = 0;  x < spaces.Count;x++) {

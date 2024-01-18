@@ -4,8 +4,14 @@ using System.Collections.Generic;
 
 namespace SimplePhysics2D.QuadTree
 {
+    /// <summary>
+    /// 动态四叉树，通过划分2D空间来优化物理碰撞
+    /// </summary>
     public class SpaceTree
     {
+        /// <summary>
+        /// 最小为32，再小会内存溢出
+        /// </summary>
         public static int MaxContain=32;
         public SAABB Area { get; }
         public int Depth { get; }
@@ -63,14 +69,11 @@ namespace SimplePhysics2D.QuadTree
             }
             if (Children.Count == 0)
             {
-                lock (Items)
-                {
+                lock (Items) {
                     Items.Add(body);
-                }
-                if (Items.Count >= MaxContain)
-                {
-                    Splite();
-                    lock (Items) {
+                    if (Items.Count >= MaxContain)
+                    {
+                        Splite();
                         for (int i = 0; i < Items.Count; i++)
                         {
                             AddToChildren(Items[i]);
@@ -88,26 +91,28 @@ namespace SimplePhysics2D.QuadTree
                 Children[i].Add(body);
             }
         }
-        public bool Remove(SPBody2D body) {
+        public void Remove(SPBody2D body) {
             if (Area.Insect(body.LastAABB)) {
-                bool t = false;
-                if (Items.Count>0) {
-                    lock (Items) {
-                        t= Items.Remove(body);
-                    }
-                }
-                if (t) {
-                    if (GetItemsCount() == 0)
+                lock (Items) {
+                    bool t = false;
+                    if (Items.Count > 0)
                     {
-                        ClearChild();
+                        t = Items.Remove(body);
                     }
-                    return true;
-                }
-                for (int i=0;i<Children.Count;i++) {
-                    Children[i].Remove(body);
+                    if (t)
+                    {
+                        if (GetItemsCount() == 0)
+                        {
+                            ClearChild();
+                        }
+                        return;
+                    }
+                    for (int i = 0; i < Children.Count; i++)
+                    {
+                        Children[i].Remove(body);
+                    }
                 }
             }
-            return false;
         }
         public int GetItemsCount() {
             int c = 0;
@@ -155,7 +160,7 @@ namespace SimplePhysics2D.QuadTree
                 }
             }
             else {
-                if (Items!=null) {
+                if (Items.Count>0) {
                     outs.Add(this);
                 }
             }

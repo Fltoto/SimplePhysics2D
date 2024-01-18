@@ -14,7 +14,7 @@ namespace SimplePhysics2D.Raycast
             this.End = End;
             this.Width = Width;
             SPBody2D.CreateBoxBody(Width, SPMath2D.Distance(Start, End), (Start + End) / 2, 0.5f, true, 0.5f, 0.5f, 0.5f, out SPBody2D body, out string erro);
-            body.Rotate(SPMath2D.Angle(new SPVector2(0,1),(End-Start)));
+            body.Rotate(-SPMath2D.Angle(new SPVector2(0,1),(End-Start)));
             this.TempBody = body;
         }
     }
