@@ -8,13 +8,25 @@
 #
 # Copyright (c) 2024 Fltoto
 */
+using SimplePhysics2D.Collision;
+
 namespace SimplePhysics2D.BoudingBox
 {
     public readonly struct SAABB
     {
         public readonly SPVector2 Min;
         public readonly SPVector2 Max;
-
+        public float Width {
+            get {
+                return (Max.X - Min.X);
+            }
+        }
+        public float Height
+        {
+            get {
+                return (Max.Y - Min.Y);
+            }
+        }
         public SAABB(SPVector2 Min,SPVector2 Max) {
             this.Min = Min;
             this.Max = Max;
@@ -24,6 +36,8 @@ namespace SimplePhysics2D.BoudingBox
             this.Min = new SPVector2(minX,minY);
             this.Max = new SPVector2(maxX,maxY);
         }
-
+        public bool Insect(SAABB Other) {
+            return Collisions.IntersectAABBs(this,Other);
+        }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using SimpleECS;
 using SimplePhysics2D.BoudingBox;
 using SimplePhysics2D.Collision;
+using SimplePhysics2D.QuadTree;
 using SimplePhysics2D.Shapes;
 using System;
+using System.Collections.Generic;
 /*
 # THIS FILE IS PART OF SimplePhysics2D
 # 
@@ -39,12 +41,15 @@ namespace SimplePhysics2D.RigidBody
 
         public bool IsStatic;
         public bool IsTrigger;
+        public bool RotFreeze;
 
         public readonly float Radius;
         public readonly float Width;
         public readonly float Height;
 
         public ShapeType2D ShapeType;
+
+        private List<SpaceTree> Trees= new List<SpaceTree>();
         private SPVector2[] Vertices;
         private bool transformUpdateRequired = true;
         private SPVector2[] transformVertices;
@@ -255,7 +260,21 @@ out SPBody2D body, out string errormsg)
             aabbUpdateRequire = false;
             return aabb;
         }
-
+        public void GetInTree(SpaceTree tree) {
+            lock(Trees){
+                Trees.Add(tree);
+            }
+        }
+        public bool GetOutTree(SpaceTree tree) {
+            lock (Trees) {
+                return Trees.Remove(tree);
+            }
+        }
+        public SpaceTree[] GetTrees() {
+            lock (Trees) {
+                return Trees.ToArray();
+            }
+        }
         public void Step(float time,int Iterations)
         {
             if (IsStatic || IsTrigger) {
@@ -263,6 +282,10 @@ out SPBody2D body, out string errormsg)
                 rotationalVelocity = 0;
                 force = SPVector2.Zero;
                 return;
+            }
+            if (RotFreeze)
+            {
+                rotationalVelocity = 0;
             }
             time /= Iterations;
             SPVector2 acceleration = this.force / this.Mass;
