@@ -8,18 +8,14 @@ namespace SimplePhysics2D
     /// </summary>
     public static class PicModelCreater
     {
-        public static SPVector2[] CalculateCollision(SKBitmap pic, int ScanStep = 2)
+        public static Vector2[] CalculateCollision(SKBitmap pic,int Scale = 1)
         {
-            List<SPVector2> vers = new List<SPVector2>();
+            List<Vector2> vers = new List<Vector2>();
             int width = pic.Width;
             int height = pic.Height;
-            if (ScanStep <= 0)
+            for (int x = 0; x <= width; x ++)
             {
-                ScanStep = 1;
-            }
-            for (int x = 0; x <= width; x += ScanStep)
-            {
-                for (int y = 0; y <= height; y += ScanStep)
+                for (int y = 0; y <= height; y ++)
                 {
                     if (x > width || y > height)
                     {
@@ -27,15 +23,15 @@ namespace SimplePhysics2D
                     }
                     if (pic.GetPixel(x, y).Alpha > 0)
                     {
-                        vers.Add(new SPVector2(x, y));
+                        vers.Add(new Vector2(x, y));
                     }
                 }
             }
             var a = vers.ToArray();
-            var center = new SPVector2(width / 2f, height / 2f);
+            var center = new Vector2(width / 2f, height / 2f);
             for (int i = 0; i < a.Length; i++)
             {
-                a[i] = (a[i] - center) / 16f;
+                a[i] = (a[i] - center) / 16f * Scale;
             }
             return a;
         }

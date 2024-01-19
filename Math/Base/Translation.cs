@@ -11,6 +11,7 @@
 */
 namespace SimplePhysics2D
 {
+    [Obsolete("已弃用")]
     internal struct Translation
     {
         public readonly float PositionX;
@@ -20,7 +21,7 @@ namespace SimplePhysics2D
 
         public readonly static Translation Zero = new Translation(0, 0, 0);
 
-        public Translation(SPVector2 position, float angle)
+        public Translation(Vector2 position, float angle)
         {
             PositionX = position.X;
             PositionY = position.Y;

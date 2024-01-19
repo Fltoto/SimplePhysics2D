@@ -13,7 +13,7 @@ namespace SimplePhysics2D.Raycast
         {
             RayCaster.tree = tree;
         }
-        public static bool Cast(SPVector2 Start, SPVector2 End, float Width, out RayCastInfo[] infos)
+        public static bool Cast(Vector2 Start, Vector2 End, float Width, out RayCastInfo[] infos)
         {
             infos = new RayCastInfo[0];
             var ray = new BoxRay(Start, End, Width);
@@ -63,10 +63,10 @@ namespace SimplePhysics2D.Raycast
         private static bool NarrowPhase(BoxRay ray, SPBody2D body, out RayCastInfo info)
         {
             info = new RayCastInfo();
-            SPVector2 point;
-            if (Collisions.Collide(ray.TempBody, body, out _, out _))
+            Vector2 point;
+            if (Collisions.Collide(ray.TempBody, body, out _))
             {
-                Collisions.FindContacts(ray.TempBody, body, out SPVector2 p1, out SPVector2 p2, out int count);
+                Collisions.FindContacts(ray.TempBody, body, out Vector2 p1, out Vector2 p2, out int count);
                 if (count == 2)
                 {
                     point = p2;

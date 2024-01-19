@@ -6,13 +6,13 @@ namespace SimplePhysics2D.Collision
     {
         public readonly SPBody2D BodyA;
         public readonly SPBody2D BodyB;
-        public readonly SPVector2 Normal;
+        public readonly Vector2 Normal;
         public readonly float Depth;
-        public readonly SPVector2 Contact1;
-        public readonly SPVector2 Contact2;
+        public readonly Vector2 Contact1;
+        public readonly Vector2 Contact2;
         public readonly int ContactCount;
 
-        public SManifold(SPBody2D bodya, SPBody2D bodyb, SPVector2 normal, float depth, SPVector2 contact1, SPVector2 contact2, int contactCount)
+        public SManifold(SPBody2D bodya, SPBody2D bodyb, Vector2 normal, float depth, Vector2 contact1, Vector2 contact2, int contactCount)
         {
             BodyA = bodya;
             BodyB = bodyb;

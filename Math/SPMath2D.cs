@@ -6,32 +6,32 @@ namespace SimplePhysics2D
     {
         public static readonly float VerySmallAmount = 0.0005f;
 
-        public static float Length(SPVector2 other)
+        public static float Length(Vector2 other)
         {
             return MathF.Sqrt(other.X * other.X + other.Y * other.Y);
         }
-        public static float LengthSquared(SPVector2 other)
+        public static float LengthSquared(Vector2 other)
         {
             return other.X * other.X + other.Y * other.Y;
         }
-        public static float Distance(SPVector2 a, SPVector2 b)
+        public static float Distance(Vector2 a, Vector2 b)
         {
             return Length(a - b);
         }
-        public static float DistanceSquared(SPVector2 a, SPVector2 b)
+        public static float DistanceSquared(Vector2 a, Vector2 b)
         {
             return LengthSquared(a - b);
         }
-        public static SPVector2 Normalize(SPVector2 a)
+        public static Vector2 Normalize(Vector2 a)
         {
             var len = Length(a);
-            return new SPVector2(a.X / len, a.Y / len);
+            return new Vector2(a.X / len, a.Y / len);
         }
-        public static float Dot(SPVector2 a, SPVector2 b)
+        public static float Dot(Vector2 a, Vector2 b)
         {
             return a.X * b.X + a.Y * b.Y;
         }
-        public static float Cross(SPVector2 a, SPVector2 b)
+        public static float Cross(Vector2 a, Vector2 b)
         {
             return a.X * b.Y - a.Y * b.X;
         }
@@ -47,7 +47,7 @@ namespace SimplePhysics2D
             }
             return value;
         }
-        public static float Angle(SPVector2 form, SPVector2 to)
+        public static float Angle(Vector2 form, Vector2 to)
         {
             float x = to.X - form.X;
             float y = to.Y - form.Y;
@@ -72,7 +72,7 @@ namespace SimplePhysics2D
         {
             return MathF.Abs(a - b) < VerySmallAmount;
         }
-        public static bool NearlyEqual(SPVector2 a, SPVector2 b)
+        public static bool NearlyEqual(Vector2 a, Vector2 b)
         {
             return DistanceSquared(a, b) < VerySmallAmount * VerySmallAmount;
         }

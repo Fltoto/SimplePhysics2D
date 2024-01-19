@@ -64,10 +64,10 @@ namespace SimplePhysics2D.QuadTree
             var nextDepth = Depth + 1;
             SAABB[] AABBS = new SAABB[4];
 
-            AABBS[0] = new SAABB(Area.Min, Area.Min + new SPVector2(width, height));
-            AABBS[1] = new SAABB(Area.Min + new SPVector2(width, 0), Area.Min + new SPVector2(width * 2, height));
-            AABBS[2] = new SAABB(Area.Min + new SPVector2(width, height), Area.Min + new SPVector2(width * 2, height * 2));
-            AABBS[3] = new SAABB(Area.Min + new SPVector2(0, height), Area.Min + new SPVector2(width, height * 2));
+            AABBS[0] = new SAABB(Area.Min, Area.Min + new Vector2(width, height));
+            AABBS[1] = new SAABB(Area.Min + new Vector2(width, 0), Area.Min + new Vector2(width * 2, height));
+            AABBS[2] = new SAABB(Area.Min + new Vector2(width, height), Area.Min + new Vector2(width * 2, height * 2));
+            AABBS[3] = new SAABB(Area.Min + new Vector2(0, height), Area.Min + new Vector2(width, height * 2));
             for (int i = 0; i < AABBS.Length; i++)
             {
                 AddChild(new SpaceTree(AABBS[i], nextDepth, MaxDepth, this));

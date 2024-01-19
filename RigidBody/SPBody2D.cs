@@ -3,6 +3,7 @@ using SimplePhysics2D.BoudingBox;
 using SimplePhysics2D.Collision;
 using SimplePhysics2D.Shapes;
 using System;
+using System.Collections.Generic;
 
 /*
 # THIS FILE IS PART OF SimplePhysics2D
@@ -20,16 +21,16 @@ namespace SimplePhysics2D.RigidBody
     {
         public Action<SManifold> OnCollide;
 
-        private SPVector2 position;
-        private SPVector2 linearVelocity;
+        private Vector2 position;
+        private Vector2 linearVelocity;
         private float rotation;
         private float rotationalVelocity;
 
-        private SPVector2 force;
+        private Vector2 force;
 
         public readonly float Density;
-        public readonly float Mass;
-        public readonly float InvMass;
+        public float Mass { get; private set; }
+        public float InvMass { get; private set; }
         public readonly float Restitution;
         public readonly float Area;
 
@@ -51,22 +52,22 @@ namespace SimplePhysics2D.RigidBody
         public SPWorld2D SPWorld;
         public SAABB LastAABB;
 
-        private SPVector2[] Vertices;
+        private List<Vector2[]> Vertices;
         private bool transformUpdateRequired = true;
-        private SPVector2[] transformVertices;
+        private List<Vector2[]> transformVertices;
         private SAABB aabb;
         private bool aabbUpdateRequire = true;
 
         public float Rotation => rotation;
-        public SPVector2 Position => position;
-        public SPVector2 LinearVelocity { get => linearVelocity; set { linearVelocity = value; } }
+        public Vector2 Position => position;
+        public Vector2 LinearVelocity { get => linearVelocity; set { linearVelocity = value; } }
         public float AngularVelocity { get => rotationalVelocity; set { rotationalVelocity = value; } }
 
-        private SPBody2D(SPVector2 position, float density, float mass, float inertia, float restiution, float area,
+        private SPBody2D(Vector2 position, float density, float mass, float inertia, float restiution, float area,
             bool isStatic, float radius, float width, float height, float staticFriction, float dynamticFriction, ShapeType2D shapetype)
         {
             this.position = position;
-            this.linearVelocity = SPVector2.Zero;
+            this.linearVelocity = Vector2.Zero;
             this.rotation = 0;
             this.rotationalVelocity = 0;
 
@@ -95,30 +96,30 @@ namespace SimplePhysics2D.RigidBody
 
             if (ShapeType == ShapeType2D.Box)
             {
-                Vertices = CreateBoxVertices(Width, Height);
-                transformVertices = new SPVector2[Vertices.Length];
+                Vertices = new List<Vector2[]>() { CreateBoxVertices(Width, Height,Vector2.Zero) };
+                transformVertices = new List<Vector2[]>() { new Vector2[Vertices[0].Length]};
             }
             else
             {
-                Vertices = new SPVector2[0];
-                transformVertices = new SPVector2[0];
+                Vertices = new List<Vector2[]>();
+                transformVertices = new List<Vector2[]>();
             }
         }
-        private static SPVector2[] CreateBoxVertices(float width, float height)
+        public static Vector2[] CreateBoxVertices(float width, float height,Vector2 offset)
         {
             float left = -width / 2f;
             float right = left + width;
             float bottom = -height / 2f;
             float top = bottom + height;
 
-            SPVector2[] ret = new SPVector2[4];
-            ret[0] = new SPVector2(left, top);
-            ret[1] = new SPVector2(right, top);
-            ret[2] = new SPVector2(right, bottom);
-            ret[3] = new SPVector2(left, bottom);
+            Vector2[] ret = new Vector2[4];
+            ret[0] = new Vector2(left, top)+offset;
+            ret[1] = new Vector2(right, top)+offset;
+            ret[2] = new Vector2(right, bottom)+offset;
+            ret[3] = new Vector2(left, bottom)+offset;
             return ret;
         }
-        public static bool CreateCircleBody(float radius, SPVector2 position, float density, bool isStatic, float restiution,
+        public static bool CreateCircleBody(float radius, Vector2 position, float density, bool isStatic, float restiution,
             float staticFriction, float dynamticFriction, out SPBody2D body, out string errormsg)
         {
             body = null;
@@ -150,7 +151,7 @@ namespace SimplePhysics2D.RigidBody
             body = new SPBody2D(position, density, mass, inertia, restiution, area, isStatic, radius, 0, 0, staticFriction, dynamticFriction, ShapeType2D.Circle);
             return true;
         }
-        public static bool CreateBoxBody(float width, float height, SPVector2 position, float density, bool isStatic, float restiution, float staticFriction, float dynamticFriction,
+        public static bool CreateBoxBody(float width, float height, Vector2 position, float density, bool isStatic, float restiution, float staticFriction, float dynamticFriction,
     out SPBody2D body, out string errormsg)
         {
             body = null;
@@ -182,7 +183,7 @@ namespace SimplePhysics2D.RigidBody
             body = new SPBody2D(position, density, mass, inertia, restiution, area, isStatic, 0, width, height, staticFriction, dynamticFriction, ShapeType2D.Box);
             return true;
         }
-        public static bool CreatePolygonBody(SPVector2[] Vertices, float area, SPVector2 position, float density, bool isStatic, float restiution, float staticFriction, float dynamticFriction,
+        public static bool CreatePolygonBody(List<Vector2[]> Vertices, float area, Vector2 position, float density, bool isStatic, float restiution, float staticFriction, float dynamticFriction,
 out SPBody2D body, out string errormsg)
         {
             body = null;
@@ -212,20 +213,28 @@ out SPBody2D body, out string errormsg)
             var inertia = (1f / 12) * mass * area;
             body = new SPBody2D(position, density, mass, inertia, restiution, area, isStatic, 0, 1, 1, staticFriction, dynamticFriction, ShapeType2D.Box);
             body.Vertices = Vertices;
-            body.transformVertices = new SPVector2[Vertices.Length];
+            body.transformVertices = new List<Vector2[]>();
+            foreach (var i in body.Vertices) {
+                body.transformVertices.Add(new Vector2[i.Length]);
+            }
             return true;
         }
-        public SPVector2[] GetTransformedVertices()
+        public List<Vector2[]> GetTransformedVertices()
         {
             if (this.transformUpdateRequired)
             {
-                Translation trans = new Translation(this.position, this.rotation);
-                for (int i = 0; i < this.Vertices.Length; i++)
-                {
-                    SPVector2 v = this.Vertices[i];
-                    this.transformVertices[i] = SPVector2.Transform(v, trans);
+                for (int x=0;x<this.Vertices.Count;x++) {
+                    var Vertices = this.Vertices[x];
+                    for (int i = 0; i < Vertices.Length; i++)
+                    {
+                        Vector2 v = Vertices[i];
+                        Matrix mat = Matrix.CreateTranslation(new Vector3(v.X, v.Y, 0)) * Matrix.CreateRotationZ(-rotation);
+                        var t = mat.Translation;
+                        v = new Vector2(t.X, t.Y) + position ;
+                        this.transformVertices[x][i] = v;
+                    }
+                    this.transformUpdateRequired = false;
                 }
-                this.transformUpdateRequired = false;
             }
             return transformVertices;
         }
@@ -254,20 +263,51 @@ out SPBody2D body, out string errormsg)
             else if (ShapeType is ShapeType2D.Box)
             {
                 var Vertices = GetTransformedVertices();
-                for (int i = 0; i < Vertices.Length; i++)
+                for (int i = 0; i < Vertices.Count; i++)
                 {
-                    SPVector2 v = Vertices[i];
-                    if (v.X < minX) { minX = v.X; }
-                    if (v.Y < minY) { minY = v.Y; }
-                    if (v.X > maxX) { maxX = v.X; }
-                    if (v.Y > maxY) { maxY = v.Y; }
+                    for (int j = 0; j < Vertices[i].Length;j++) {
+                        Vector2 v = Vertices[i][j];
+                        if (v.X < minX) { minX = v.X; }
+                        if (v.Y < minY) { minY = v.Y; }
+                        if (v.X > maxX) { maxX = v.X; }
+                        if (v.Y > maxY) { maxY = v.Y; }
+                    }
                 }
             }
             else throw new Exception("UnKnown type");
             aabb = new SAABB(minX, minY, maxX, maxY);
             aabbUpdateRequire = false;
         }
-
+        /// <summary>
+        /// 此方法仅对ShapeType为Box的对象有效,将会返回一个储存索引,如果删除不按照添加顺序删除，则索引会乱序
+        /// </summary>
+        public int AddColVertices(Vector2[] Vertices) {
+            if (ShapeType!=ShapeType2D.Box) {
+                return -1;
+            }
+            this.Vertices.Add(Vertices);
+            this.transformVertices.Add(new Vector2[Vertices.Length]);
+            this.transformUpdateRequired = true;
+            this.aabbUpdateRequire = true;
+            return this.Vertices.Count - 1;
+        }
+        /// <summary>
+        /// 此方法仅对ShapeType为Box的对象有效
+        /// </summary>
+        public void RemoveCalVertices(int index) {
+            if (ShapeType != ShapeType2D.Box)
+            {
+                return;
+            }
+            this.Vertices.RemoveAt(index);
+            this.transformVertices.RemoveAt(index);
+            this.transformUpdateRequired = true;
+            this.aabbUpdateRequire = true;
+        }
+        public void SetMass(float mass) {
+            this.Mass = mass;
+            this.InvMass = 1f / mass;
+        }
         public void Step(float time, int Iterations)
         {
             LastAABB = aabb;
@@ -278,9 +318,9 @@ out SPBody2D body, out string errormsg)
             }
             if (IsStatic || IsTrigger)
             {
-                linearVelocity = SPVector2.Zero;
+                linearVelocity = Vector2.Zero;
                 rotationalVelocity = 0;
-                force = SPVector2.Zero;
+                force = Vector2.Zero;
                 return;
             }
             if (RotFreeze)
@@ -288,23 +328,23 @@ out SPBody2D body, out string errormsg)
                 rotationalVelocity = 0;
             }
             time /= Iterations;
-            SPVector2 acceleration = this.force / this.Mass;
+            Vector2 acceleration = this.force / this.Mass;
             this.linearVelocity += acceleration * time;
             if (VelocityFreeze)
             {
-                linearVelocity = SPVector2.Zero;
+                linearVelocity = Vector2.Zero;
             }
             Move(linearVelocity * time);
             Rotate(rotationalVelocity * time);
-            this.force = SPVector2.Zero;
+            this.force = Vector2.Zero;
         }
-        public void Move(SPVector2 vec)
+        public void Move(Vector2 vec)
         {
             this.position += vec;
             this.transformUpdateRequired = true;
             aabbUpdateRequire = true;
         }
-        public void MoveTo(SPVector2 pos)
+        public void MoveTo(Vector2 pos)
         {
             this.position = pos;
             this.transformUpdateRequired = true;
@@ -315,7 +355,7 @@ out SPBody2D body, out string errormsg)
             this.rotation += angle;
             this.transformUpdateRequired = true;
         }
-        public void AddForce(SPVector2 force)
+        public void AddForce(Vector2 force)
         {
             this.force += force;
         }

@@ -39,34 +39,34 @@ namespace SimplePhysics2D
         public int Iterations = 2;
         public bool Running { get; private set; }
 
-        public readonly SAABB WorldWide = new SAABB(new SPVector2(-100000, -100000), new SPVector2(100000, 100000));
+        public readonly SAABB WorldWide = new SAABB(new Vector2(-100000, -100000), new Vector2(100000, 100000));
 
         private DateTime LastTime;
         private DateTime lastfps;
-        private SPVector2[] contactList;
-        private SPVector2[] impulseList;
-        private SPVector2[] raList;
-        private SPVector2[] rbList;
-        private SPVector2[] frictionImpulseList;
+        private Vector2[] contactList;
+        private Vector2[] impulseList;
+        private Vector2[] raList;
+        private Vector2[] rbList;
+        private Vector2[] frictionImpulseList;
         private float[] jList;
         private SpaceTree SpaceTree;
 
         public SPWorld2D()
         {
-            this.contactList = new SPVector2[2];
-            this.impulseList = new SPVector2[2];
-            this.raList = new SPVector2[2];
-            this.rbList = new SPVector2[2];
-            this.frictionImpulseList = new SPVector2[2];
+            this.contactList = new Vector2[2];
+            this.impulseList = new Vector2[2];
+            this.raList = new Vector2[2];
+            this.rbList = new Vector2[2];
+            this.frictionImpulseList = new Vector2[2];
             this.jList = new float[2];
         }
         public SPWorld2D(SAABB WorldWide)
         {
-            this.contactList = new SPVector2[2];
-            this.impulseList = new SPVector2[2];
-            this.raList = new SPVector2[2];
-            this.rbList = new SPVector2[2];
-            this.frictionImpulseList = new SPVector2[2];
+            this.contactList = new Vector2[2];
+            this.impulseList = new Vector2[2];
+            this.raList = new Vector2[2];
+            this.rbList = new Vector2[2];
+            this.frictionImpulseList = new Vector2[2];
             this.jList = new float[2];
             this.WorldWide = WorldWide;
         }
@@ -211,11 +211,11 @@ namespace SimplePhysics2D
             {
                 return;
             }
-            if (Collisions.Collide(bodyA, bodyB, out SPVector2 normal, out float depth))
+            if (Collisions.Collide(bodyA, bodyB, out Vector2 outer))
             {
-                SeparateBodies(bodyA, bodyB, normal * depth);
-                Collisions.FindContacts(bodyA, bodyB, out SPVector2 contact1, out SPVector2 contact2, out int contactCount);
-                SManifold contact = new SManifold(bodyA, bodyB, normal, depth, contact1, contact2, contactCount);
+                SeparateBodies(bodyA, bodyB, outer);
+                Collisions.FindContacts(bodyA, bodyB, out Vector2 contact1, out Vector2 contact2, out int contactCount);
+                SManifold contact = new SManifold(bodyA, bodyB, SPMath2D.Normalize(outer), SPMath2D.Length(outer), contact1, contact2, contactCount);
                 switch (SolveType)
                 {
                     case CollideSolveType.Basic: { ResolveCollisionBasic(contact); } break;
@@ -224,7 +224,7 @@ namespace SimplePhysics2D
                 }
             }
         }
-        private void SeparateBodies(SPBody2D bodyA, SPBody2D bodyB, SPVector2 mtv)
+        private void SeparateBodies(SPBody2D bodyA, SPBody2D bodyB, Vector2 mtv)
         {
             if (bodyA.IsTrigger || bodyB.IsTrigger)
             {
@@ -259,7 +259,7 @@ namespace SimplePhysics2D
                 return;
             }
 
-            SPVector2 relativeVelocity = bodyB.LinearVelocity - bodyA.LinearVelocity;
+            Vector2 relativeVelocity = bodyB.LinearVelocity - bodyA.LinearVelocity;
 
             if (SPMath2D.Dot(relativeVelocity, normal) > 0)
             {
@@ -269,7 +269,7 @@ namespace SimplePhysics2D
             float e = MathF.Min(bodyA.Restitution, bodyB.Restitution);
             float j = -(1f + e) * SPMath2D.Dot(relativeVelocity, normal);
             j /= bodyA.InvMass + bodyB.InvMass;
-            SPVector2 impulse = j * normal;
+            Vector2 impulse = j * normal;
             bodyA.LinearVelocity -= impulse * bodyA.InvMass;
             bodyB.LinearVelocity += impulse * bodyB.InvMass;
         }
@@ -283,9 +283,9 @@ namespace SimplePhysics2D
             {
                 return;
             }
-            SPVector2 normal = contact.Normal;
-            SPVector2 contact1 = contact.Contact1;
-            SPVector2 contact2 = contact.Contact2;
+            Vector2 normal = contact.Normal;
+            Vector2 contact1 = contact.Contact1;
+            Vector2 contact2 = contact.Contact2;
             int contactCount = contact.ContactCount;
 
             float e = MathF.Min(bodyA.Restitution, bodyB.Restitution);
@@ -295,26 +295,26 @@ namespace SimplePhysics2D
 
             for (int i = 0; i < contactCount; i++)
             {
-                this.impulseList[i] = SPVector2.Zero;
-                this.raList[i] = SPVector2.Zero;
-                this.rbList[i] = SPVector2.Zero;
+                this.impulseList[i] = Vector2.Zero;
+                this.raList[i] = Vector2.Zero;
+                this.rbList[i] = Vector2.Zero;
             }
 
             for (int i = 0; i < contactCount; i++)
             {
-                SPVector2 ra = contactList[i] - bodyA.Position;
-                SPVector2 rb = contactList[i] - bodyB.Position;
+                Vector2 ra = contactList[i] - bodyA.Position;
+                Vector2 rb = contactList[i] - bodyB.Position;
 
                 raList[i] = ra;
                 rbList[i] = rb;
 
-                SPVector2 raPerp = new SPVector2(-ra.Y, ra.X);
-                SPVector2 rbPerp = new SPVector2(-rb.Y, rb.X);
+                Vector2 raPerp = new Vector2(-ra.Y, ra.X);
+                Vector2 rbPerp = new Vector2(-rb.Y, rb.X);
 
-                SPVector2 angularLinearVelocityA = raPerp * bodyA.AngularVelocity;
-                SPVector2 angularLinearVelocityB = rbPerp * bodyB.AngularVelocity;
+                Vector2 angularLinearVelocityA = raPerp * bodyA.AngularVelocity;
+                Vector2 angularLinearVelocityB = rbPerp * bodyB.AngularVelocity;
 
-                SPVector2 relativeVelocity =
+                Vector2 relativeVelocity =
                     (bodyB.LinearVelocity + angularLinearVelocityB) -
                     (bodyA.LinearVelocity + angularLinearVelocityA);
 
@@ -336,15 +336,15 @@ namespace SimplePhysics2D
                 j /= denom;
                 j /= (float)contactCount;
 
-                SPVector2 impulse = j * normal;
+                Vector2 impulse = j * normal;
                 impulseList[i] = impulse;
             }
 
             for (int i = 0; i < contactCount; i++)
             {
-                SPVector2 impulse = impulseList[i];
-                SPVector2 ra = raList[i];
-                SPVector2 rb = rbList[i];
+                Vector2 impulse = impulseList[i];
+                Vector2 ra = raList[i];
+                Vector2 rb = rbList[i];
 
                 bodyA.LinearVelocity += -impulse * bodyA.InvMass;
                 bodyA.AngularVelocity += -SPMath2D.Cross(ra, impulse) * bodyA.InvInertia;
@@ -362,9 +362,9 @@ namespace SimplePhysics2D
             {
                 return;
             }
-            SPVector2 normal = contact.Normal;
-            SPVector2 contact1 = contact.Contact1;
-            SPVector2 contact2 = contact.Contact2;
+            Vector2 normal = contact.Normal;
+            Vector2 contact1 = contact.Contact1;
+            Vector2 contact2 = contact.Contact2;
             int contactCount = contact.ContactCount;
 
             float e = MathF.Min(bodyA.Restitution, bodyB.Restitution);
@@ -377,28 +377,28 @@ namespace SimplePhysics2D
 
             for (int i = 0; i < contactCount; i++)
             {
-                this.impulseList[i] = SPVector2.Zero;
-                this.raList[i] = SPVector2.Zero;
-                this.rbList[i] = SPVector2.Zero;
-                this.frictionImpulseList[i] = SPVector2.Zero;
+                this.impulseList[i] = Vector2.Zero;
+                this.raList[i] = Vector2.Zero;
+                this.rbList[i] = Vector2.Zero;
+                this.frictionImpulseList[i] = Vector2.Zero;
                 this.jList[i] = 0f;
             }
 
             for (int i = 0; i < contactCount; i++)
             {
-                SPVector2 ra = contactList[i] - bodyA.Position;
-                SPVector2 rb = contactList[i] - bodyB.Position;
+                Vector2 ra = contactList[i] - bodyA.Position;
+                Vector2 rb = contactList[i] - bodyB.Position;
 
                 raList[i] = ra;
                 rbList[i] = rb;
 
-                SPVector2 raPerp = new SPVector2(-ra.Y, ra.X);
-                SPVector2 rbPerp = new SPVector2(-rb.Y, rb.X);
+                Vector2 raPerp = new Vector2(-ra.Y, ra.X);
+                Vector2 rbPerp = new Vector2(-rb.Y, rb.X);
 
-                SPVector2 angularLinearVelocityA = raPerp * bodyA.AngularVelocity;
-                SPVector2 angularLinearVelocityB = rbPerp * bodyB.AngularVelocity;
+                Vector2 angularLinearVelocityA = raPerp * bodyA.AngularVelocity;
+                Vector2 angularLinearVelocityB = rbPerp * bodyB.AngularVelocity;
 
-                SPVector2 relativeVelocity =
+                Vector2 relativeVelocity =
                     (bodyB.LinearVelocity + angularLinearVelocityB) -
                     (bodyA.LinearVelocity + angularLinearVelocityA);
 
@@ -422,15 +422,15 @@ namespace SimplePhysics2D
 
                 jList[i] = j;
 
-                SPVector2 impulse = j * normal;
+                Vector2 impulse = j * normal;
                 impulseList[i] = impulse;
             }
 
             for (int i = 0; i < contactCount; i++)
             {
-                SPVector2 impulse = impulseList[i];
-                SPVector2 ra = raList[i];
-                SPVector2 rb = rbList[i];
+                Vector2 impulse = impulseList[i];
+                Vector2 ra = raList[i];
+                Vector2 rb = rbList[i];
 
                 bodyA.LinearVelocity += -impulse * bodyA.InvMass;
                 bodyA.AngularVelocity += -SPMath2D.Cross(ra, impulse) * bodyA.InvInertia;
@@ -440,25 +440,25 @@ namespace SimplePhysics2D
 
             for (int i = 0; i < contactCount; i++)
             {
-                SPVector2 ra = contactList[i] - bodyA.Position;
-                SPVector2 rb = contactList[i] - bodyB.Position;
+                Vector2 ra = contactList[i] - bodyA.Position;
+                Vector2 rb = contactList[i] - bodyB.Position;
 
                 raList[i] = ra;
                 rbList[i] = rb;
 
-                SPVector2 raPerp = new SPVector2(-ra.Y, ra.X);
-                SPVector2 rbPerp = new SPVector2(-rb.Y, rb.X);
+                Vector2 raPerp = new Vector2(-ra.Y, ra.X);
+                Vector2 rbPerp = new Vector2(-rb.Y, rb.X);
 
-                SPVector2 angularLinearVelocityA = raPerp * bodyA.AngularVelocity;
-                SPVector2 angularLinearVelocityB = rbPerp * bodyB.AngularVelocity;
+                Vector2 angularLinearVelocityA = raPerp * bodyA.AngularVelocity;
+                Vector2 angularLinearVelocityB = rbPerp * bodyB.AngularVelocity;
 
-                SPVector2 relativeVelocity =
+                Vector2 relativeVelocity =
                     (bodyB.LinearVelocity + angularLinearVelocityB) -
                     (bodyA.LinearVelocity + angularLinearVelocityA);
 
-                SPVector2 tangent = relativeVelocity - SPMath2D.Dot(relativeVelocity, normal) * normal;
+                Vector2 tangent = relativeVelocity - SPMath2D.Dot(relativeVelocity, normal) * normal;
 
-                if (SPMath2D.NearlyEqual(tangent, SPVector2.Zero))
+                if (SPMath2D.NearlyEqual(tangent, Vector2.Zero))
                 {
                     continue;
                 }
@@ -478,7 +478,7 @@ namespace SimplePhysics2D
                 jt /= denom;
                 jt /= (float)contactCount;
 
-                SPVector2 frictionImpulse;
+                Vector2 frictionImpulse;
                 float j = jList[i];
 
                 if (MathF.Abs(jt) <= j * sf)
@@ -495,9 +495,9 @@ namespace SimplePhysics2D
 
             for (int i = 0; i < contactCount; i++)
             {
-                SPVector2 frictionImpulse = this.frictionImpulseList[i];
-                SPVector2 ra = raList[i];
-                SPVector2 rb = rbList[i];
+                Vector2 frictionImpulse = this.frictionImpulseList[i];
+                Vector2 ra = raList[i];
+                Vector2 rb = rbList[i];
 
                 bodyA.LinearVelocity += -frictionImpulse * bodyA.InvMass;
                 bodyA.AngularVelocity += -SPMath2D.Cross(ra, frictionImpulse) * bodyA.InvInertia;

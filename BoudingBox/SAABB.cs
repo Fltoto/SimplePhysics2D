@@ -14,8 +14,8 @@ namespace SimplePhysics2D.BoudingBox
 {
     public readonly struct SAABB
     {
-        public readonly SPVector2 Min;
-        public readonly SPVector2 Max;
+        public readonly Vector2 Min;
+        public readonly Vector2 Max;
         public float Width
         {
             get
@@ -37,7 +37,7 @@ namespace SimplePhysics2D.BoudingBox
                 return Width * Height;
             }
         }
-        public SAABB(SPVector2 Min, SPVector2 Max)
+        public SAABB(Vector2 Min, Vector2 Max)
         {
             this.Min = Min;
             this.Max = Max;
@@ -45,8 +45,8 @@ namespace SimplePhysics2D.BoudingBox
 
         public SAABB(float minX, float minY, float maxX, float maxY)
         {
-            this.Min = new SPVector2(minX, minY);
-            this.Max = new SPVector2(maxX, maxY);
+            this.Min = new Vector2(minX, minY);
+            this.Max = new Vector2(maxX, maxY);
         }
         public bool Insect(SAABB Other)
         {
