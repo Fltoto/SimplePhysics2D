@@ -1,8 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Drawing;
-using System;
-using System.Runtime.Serialization;
 using System.Numerics;
+using System.Runtime.Serialization;
 
 namespace SimplePhysics2D
 {

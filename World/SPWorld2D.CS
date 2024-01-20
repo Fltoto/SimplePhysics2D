@@ -249,7 +249,6 @@ namespace SimplePhysics2D
             var bodyA = contact.BodyA;
             var bodyB = contact.BodyB;
             var normal = contact.Normal;
-            var depth = contact.Depth;
 
             bodyA.OnCollide?.Invoke(contact);
             bodyB.OnCollide?.Invoke(contact);

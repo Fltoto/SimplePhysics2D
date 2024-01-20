@@ -84,6 +84,10 @@ namespace SimplePhysics2D.QuadTree
             {
                 lock (Items)
                 {
+                    if (Items.Contains(body))
+                    {
+                        return;
+                    }
                     Items.Add(body);
                     if (Items.Count >= MaxContain)
                     {

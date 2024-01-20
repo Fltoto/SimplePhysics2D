@@ -96,8 +96,8 @@ namespace SimplePhysics2D.RigidBody
 
             if (ShapeType == ShapeType2D.Box)
             {
-                Vertices = new List<Vector2[]>() { CreateBoxVertices(Width, Height,Vector2.Zero) };
-                transformVertices = new List<Vector2[]>() { new Vector2[Vertices[0].Length]};
+                Vertices = new List<Vector2[]>() { CreateBoxVertices(Width, Height, Vector2.Zero) };
+                transformVertices = new List<Vector2[]>() { new Vector2[Vertices[0].Length] };
             }
             else
             {
@@ -105,7 +105,7 @@ namespace SimplePhysics2D.RigidBody
                 transformVertices = new List<Vector2[]>();
             }
         }
-        public static Vector2[] CreateBoxVertices(float width, float height,Vector2 offset)
+        public static Vector2[] CreateBoxVertices(float width, float height, Vector2 offset)
         {
             float left = -width / 2f;
             float right = left + width;
@@ -113,10 +113,10 @@ namespace SimplePhysics2D.RigidBody
             float top = bottom + height;
 
             Vector2[] ret = new Vector2[4];
-            ret[0] = new Vector2(left, top)+offset;
-            ret[1] = new Vector2(right, top)+offset;
-            ret[2] = new Vector2(right, bottom)+offset;
-            ret[3] = new Vector2(left, bottom)+offset;
+            ret[0] = new Vector2(left, top) + offset;
+            ret[1] = new Vector2(right, top) + offset;
+            ret[2] = new Vector2(right, bottom) + offset;
+            ret[3] = new Vector2(left, bottom) + offset;
             return ret;
         }
         public static bool CreateCircleBody(float radius, Vector2 position, float density, bool isStatic, float restiution,
@@ -214,7 +214,8 @@ out SPBody2D body, out string errormsg)
             body = new SPBody2D(position, density, mass, inertia, restiution, area, isStatic, 0, 1, 1, staticFriction, dynamticFriction, ShapeType2D.Box);
             body.Vertices = Vertices;
             body.transformVertices = new List<Vector2[]>();
-            foreach (var i in body.Vertices) {
+            foreach (var i in body.Vertices)
+            {
                 body.transformVertices.Add(new Vector2[i.Length]);
             }
             return true;
@@ -223,14 +224,15 @@ out SPBody2D body, out string errormsg)
         {
             if (this.transformUpdateRequired)
             {
-                for (int x=0;x<this.Vertices.Count;x++) {
+                for (int x = 0; x < this.Vertices.Count; x++)
+                {
                     var Vertices = this.Vertices[x];
                     for (int i = 0; i < Vertices.Length; i++)
                     {
                         Vector2 v = Vertices[i];
                         Matrix mat = Matrix.CreateTranslation(new Vector3(v.X, v.Y, 0)) * Matrix.CreateRotationZ(-rotation);
                         var t = mat.Translation;
-                        v = new Vector2(t.X, t.Y) + position ;
+                        v = new Vector2(t.X, t.Y) + position;
                         this.transformVertices[x][i] = v;
                     }
                     this.transformUpdateRequired = false;
@@ -265,7 +267,8 @@ out SPBody2D body, out string errormsg)
                 var Vertices = GetTransformedVertices();
                 for (int i = 0; i < Vertices.Count; i++)
                 {
-                    for (int j = 0; j < Vertices[i].Length;j++) {
+                    for (int j = 0; j < Vertices[i].Length; j++)
+                    {
                         Vector2 v = Vertices[i][j];
                         if (v.X < minX) { minX = v.X; }
                         if (v.Y < minY) { minY = v.Y; }
@@ -281,8 +284,10 @@ out SPBody2D body, out string errormsg)
         /// <summary>
         /// 此方法仅对ShapeType为Box的对象有效,将会返回一个储存索引,如果删除不按照添加顺序删除，则索引会乱序
         /// </summary>
-        public int AddColVertices(Vector2[] Vertices) {
-            if (ShapeType!=ShapeType2D.Box) {
+        public int AddColVertices(Vector2[] Vertices)
+        {
+            if (ShapeType != ShapeType2D.Box)
+            {
                 return -1;
             }
             this.Vertices.Add(Vertices);
@@ -294,7 +299,8 @@ out SPBody2D body, out string errormsg)
         /// <summary>
         /// 此方法仅对ShapeType为Box的对象有效
         /// </summary>
-        public void RemoveCalVertices(int index) {
+        public void RemoveCalVertices(int index)
+        {
             if (ShapeType != ShapeType2D.Box)
             {
                 return;
@@ -304,7 +310,8 @@ out SPBody2D body, out string errormsg)
             this.transformUpdateRequired = true;
             this.aabbUpdateRequire = true;
         }
-        public void SetMass(float mass) {
+        public void SetMass(float mass)
+        {
             this.Mass = mass;
             this.InvMass = 1f / mass;
         }

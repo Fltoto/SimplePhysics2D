@@ -8,10 +8,10 @@
 #
 # Copyright (c) 2024 Fltoto
 */
+using System;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
-using System;
 
 namespace SimplePhysics2D
 {
@@ -237,9 +237,10 @@ namespace SimplePhysics2D
             return value1;
         }
         [Obsolete("已弃用")]
-        internal static Vector2 UseTranslation(Vector2 v,Translation trans) {
+        internal static Vector2 UseTranslation(Vector2 v, Translation trans)
+        {
             return new Vector2(
-                trans.Cos*v.X - trans.Sin*v.Y+trans.PositionX,trans.Sin*v.X+trans.Cos*v.Y+trans.PositionY);
+                trans.Cos * v.X - trans.Sin * v.Y + trans.PositionX, trans.Sin * v.X + trans.Cos * v.Y + trans.PositionY);
         }
         public static void Divide(ref Vector2 value1, ref Vector2 value2, out Vector2 result)
         {

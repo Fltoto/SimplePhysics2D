@@ -290,7 +290,8 @@ namespace SimplePhysics2D.Collision
 
                 outer += tnormal * tdepth;
             }
-            if (outer.Equals(Vector2.Zero)) {
+            if (outer.Equals(Vector2.Zero))
+            {
                 return false;
             }
             return true;
@@ -362,7 +363,8 @@ namespace SimplePhysics2D.Collision
                             tnormal = axis;
                         }
                     }
-                    if (check) {
+                    if (check)
+                    {
                         continue;
                     }
                     for (int i = 0; i < verticesB.Length; i++)
@@ -386,7 +388,8 @@ namespace SimplePhysics2D.Collision
                             tnormal = axis;
                         }
                     }
-                    if (check) {
+                    if (check)
+                    {
                         continue;
                     }
                     tdepth /= SPMath2D.Length(tnormal);
@@ -400,7 +403,8 @@ namespace SimplePhysics2D.Collision
                     outer += tnormal * tdepth;
                 }
             }
-            if (outer.Equals(Vector2.Zero)) {
+            if (outer.Equals(Vector2.Zero))
+            {
                 return false;
             }
             return true;

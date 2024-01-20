@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Numerics;
 using System.Runtime.Serialization;
 
 namespace SimplePhysics2D

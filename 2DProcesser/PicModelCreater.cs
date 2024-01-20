@@ -8,14 +8,14 @@ namespace SimplePhysics2D
     /// </summary>
     public static class PicModelCreater
     {
-        public static Vector2[] CalculateCollision(SKBitmap pic,int Scale = 1)
+        public static Vector2[] CalculateCollision(SKBitmap pic, int Scale = 1)
         {
             List<Vector2> vers = new List<Vector2>();
             int width = pic.Width;
             int height = pic.Height;
-            for (int x = 0; x <= width; x ++)
+            for (int x = 0; x <= width; x++)
             {
-                for (int y = 0; y <= height; y ++)
+                for (int y = 0; y <= height; y++)
                 {
                     if (x > width || y > height)
                     {
